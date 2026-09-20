@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import MarginIcon from '../assets/Margin.svg';
+import Illustration1Icon from '../assets/Illustration.svg';
 import HeroIcon from '../assets/Hero Graphic Area_margin.svg';
-import Boarding3Icon from '../assets/boaridn 3.svg';
+import Illustration3Icon from '../assets/Illustration (1).svg';
 
 const { width } = Dimensions.get('window');
 
@@ -12,7 +12,7 @@ const onboardingData = [
     title: 'Welcome to MedTrack',
     subtitle: 'Your personal companion for medication management and health tracking.',
     description: 'Digitize your medicine cabinet effortlessly. Keep track of what you take, when to take it, and never miss a dose again.',
-    Icon: MarginIcon,
+    Icon: Illustration1Icon,
   },
   {
     id: 2,
@@ -26,7 +26,7 @@ const onboardingData = [
     title: 'Track Your Progress',
     subtitle: null,
     description: 'View adherence charts and gain insights into your health journey over time with the Health Trends feature.',
-    Icon: Boarding3Icon,
+    Icon: Illustration3Icon,
   },
 ];
 
@@ -53,7 +53,7 @@ const OnboardingScreen = ({ navigation }) => {
     <View style={styles.container}>
       {/* Top Image Section */}
       <View style={styles.imageContainer}>
-        <CurrentIcon width={width * 0.9} height={width * 0.9} />
+        <CurrentIcon width={width * 0.75} height={width * 0.75} />
       </View>
 
       {/* Text Content Section */}
@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: 'center',
     marginTop: 20,
+    minHeight: 180, // ensures the title stays at the same vertical position across all screens
   },
   title: {
     fontSize: 28,
