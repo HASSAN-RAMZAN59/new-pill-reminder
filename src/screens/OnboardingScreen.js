@@ -1,21 +1,32 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import MarginIcon from '../assets/Margin.svg';
+import HeroIcon from '../assets/Hero Graphic Area_margin.svg';
+import Boarding3Icon from '../assets/boaridn 3.svg';
+
+const { width } = Dimensions.get('window');
 
 const onboardingData = [
   {
     id: 1,
-    title: 'Onboarding Step 1',
-    description: 'Welcome to the Pill Reminder app.',
+    title: 'Welcome to MedTrack',
+    subtitle: 'Your personal companion for medication management and health tracking.',
+    description: 'Digitize your medicine cabinet effortlessly. Keep track of what you take, when to take it, and never miss a dose again.',
+    Icon: MarginIcon,
   },
   {
     id: 2,
-    title: 'Onboarding Step 2',
-    description: 'Set up your personal medication schedule.',
+    title: 'Never Miss a Dose',
+    subtitle: null,
+    description: 'Get timely notifications tailored to your schedule and never worry about forgetting again.',
+    Icon: HeroIcon,
   },
   {
     id: 3,
-    title: 'Onboarding Step 3',
-    description: 'Never miss a pill again. You are all set!',
+    title: 'Track Your Progress',
+    subtitle: null,
+    description: 'View adherence charts and gain insights into your health journey over time with the Health Trends feature.',
+    Icon: Boarding3Icon,
   },
 ];
 
@@ -31,21 +42,58 @@ const OnboardingScreen = ({ navigation }) => {
     }
   };
 
+  const handleSkip = () => {
+    navigation.replace('Home');
+  };
+
   const currentData = onboardingData[currentStep];
+  const CurrentIcon = currentData.Icon;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{currentData.title}</Text>
-      <Text style={styles.description}>{currentData.description}</Text>
-      
-      <TouchableOpacity 
-        style={styles.button}
-        onPress={handleNext}
-      >
-        <Text style={styles.buttonText}>
-          {currentStep === onboardingData.length - 1 ? 'Get Started' : 'Next'}
+      {/* Top Image Section */}
+      <View style={styles.imageContainer}>
+        <CurrentIcon width={width * 0.9} height={width * 0.9} />
+      </View>
+
+      {/* Text Content Section */}
+      <View style={styles.textContainer}>
+        <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>
+          {currentData.title}
         </Text>
-      </TouchableOpacity>
+        {currentData.subtitle && (
+          <Text style={styles.subtitle}>{currentData.subtitle}</Text>
+        )}
+        <Text style={styles.description}>{currentData.description}</Text>
+      </View>
+
+      {/* Pagination Dots */}
+      <View style={styles.paginationContainer}>
+        {onboardingData.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.dot,
+              currentStep === index ? styles.activeDot : styles.inactiveDot,
+            ]}
+          />
+        ))}
+      </View>
+
+      {/* Buttons Section */}
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+          <Text style={styles.nextButtonText}>
+            {currentStep === onboardingData.length - 1 ? 'Get Started \u2192' : 'Next'}
+          </Text>
+        </TouchableOpacity>
+
+        {currentStep !== onboardingData.length - 1 && (
+          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+            <Text style={styles.skipButtonText}>Skip</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
@@ -53,34 +101,94 @@ const OnboardingScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#F8F9FA',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
-    padding: 20,
+    justifyContent: 'space-between',
+    paddingVertical: 40,
+  },
+  imageContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  textContainer: {
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    marginTop: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
+    color: '#0285FF',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  subtitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333333',
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 24,
   },
   description: {
-    fontSize: 16,
+    fontSize: 14,
+    color: '#666666',
     textAlign: 'center',
-    marginBottom: 40,
-    color: '#666',
+    lineHeight: 22,
   },
-  button: {
-    backgroundColor: '#4A90E2',
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    borderRadius: 8,
+  paginationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 20,
   },
-  buttonText: {
-    color: '#fff',
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 5,
+  },
+  activeDot: {
+    backgroundColor: '#0285FF',
+  },
+  inactiveDot: {
+    backgroundColor: '#CBD5E1',
+  },
+  bottomContainer: {
+    width: '100%',
+    paddingHorizontal: 24,
+    alignItems: 'center',
+  },
+  nextButton: {
+    backgroundColor: '#0285FF',
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 30,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  nextButtonText: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
-  }
+  },
+  skipButton: {
+    paddingVertical: 10,
+  },
+  skipButtonText: {
+    color: '#0285FF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
 
 export default OnboardingScreen;
