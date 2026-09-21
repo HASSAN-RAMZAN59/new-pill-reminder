@@ -15,8 +15,9 @@ import HelpCenterIcon from '../assets/settings/Container (7).svg';
 import AboutIcon from '../assets/settings/Container (8).svg';
 import ChevronRightIcon from '../assets/settings/Container (9).svg';
 import RefillReminderIcon from '../assets/settings/Container.svg';
+import BackIcon from '../assets/settings/back.svg';
 
-const SettingsScreen = () => {
+const SettingsScreen = ({ navigation }) => {
   const [settings, setSettings] = useState({
     refillReminders: true,
     snoozeDuration: 15,
@@ -103,6 +104,9 @@ const SettingsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation?.goBack()}>
+          <BackIcon width={16} height={16} color="#4B5563" />
+        </TouchableOpacity>
         <Text style={styles.brandTitle}>Settings</Text>
       </View>
 
@@ -157,14 +161,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
   },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 15,
+  },
+  backButton: {
+    position: 'absolute',
+    left: 10,
+    padding: 10,
   },
   brandTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#111827',
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0285FF',
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -173,7 +183,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#0285FF',
     marginBottom: 8,
     marginTop: 20,
     paddingLeft: 4,
