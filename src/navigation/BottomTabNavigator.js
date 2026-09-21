@@ -1,11 +1,15 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/Feather'; // Using Feather for clean line icons
 
 import HomeScreen from '../screens/HomeScreen';
 import CabinetScreen from '../screens/CabinetScreen';
 import TrendsScreen from '../screens/TrendsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+
+import IconToday from '../assets/today.svg';
+import IconCabinet from '../assets/Container.svg';
+import IconTrends from '../assets/Margin (1).svg';
+import IconSetting from '../assets/Margin (2).svg';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,19 +18,16 @@ const BottomTabNavigator = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
           if (route.name === 'Today') {
-            iconName = 'calendar';
+            return <IconToday width={size} height={size} color={color} />;
           } else if (route.name === 'Cabinet') {
-            iconName = 'briefcase'; // Using briefcase as placeholder for med box
+            return <IconCabinet width={size} height={size} color={color} />;
           } else if (route.name === 'Trends') {
-            iconName = 'bar-chart-2';
+            return <IconTrends width={size} height={size} color={color} />;
           } else if (route.name === 'Setting') {
-            iconName = 'settings';
+            return <IconSetting width={size} height={size} color={color} />;
           }
-
-          return <Icon name={iconName} size={size} color={color} />;
+          return null;
         },
         tabBarActiveTintColor: '#0285FF',
         tabBarInactiveTintColor: '#CBD5E1',
