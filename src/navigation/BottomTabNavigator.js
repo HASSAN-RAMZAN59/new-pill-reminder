@@ -33,9 +33,9 @@ const BottomTabNavigator = () => {
         tabBarInactiveTintColor: '#CBD5E1',
         headerShown: false,
         tabBarStyle: {
-          paddingBottom: 5,
-          paddingTop: 5,
-          height: 60,
+          paddingBottom: 12,
+          paddingTop: 8,
+          height: 68,
           backgroundColor: '#FFFFFF',
           borderTopWidth: 1,
           borderTopColor: '#F1F5F9',
@@ -43,6 +43,7 @@ const BottomTabNavigator = () => {
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '500',
+          marginTop: 2,
         },
       })}
     >

@@ -5,6 +5,16 @@ import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import { StorageService } from '../services/StorageService';
 import NotificationService from '../services/NotificationService';
+import SnoozeIcon from '../assets/settings/Container (1).svg';
+import PillImageIcon from '../assets/settings/Container (2).svg';
+import DailySummaryIcon from '../assets/settings/Container (3).svg';
+import DoseAlertsIcon from '../assets/settings/Container (4).svg';
+import SoundVibrationIcon from '../assets/settings/Container (5).svg';
+import DataExportIcon from '../assets/settings/Container (6).svg';
+import HelpCenterIcon from '../assets/settings/Container (7).svg';
+import AboutIcon from '../assets/settings/Container (8).svg';
+import ChevronRightIcon from '../assets/settings/Container (9).svg';
+import RefillReminderIcon from '../assets/settings/Container.svg';
 
 const SettingsScreen = () => {
   const [settings, setSettings] = useState({
@@ -14,7 +24,6 @@ const SettingsScreen = () => {
     dailySummary: true,
     doseAlerts: true,
     soundVibration: true,
-    biometricLock: false,
   });
 
   const loadSettings = useCallback(() => {
@@ -58,7 +67,11 @@ const SettingsScreen = () => {
   const renderToggleItem = (icon, title, valueKey) => (
     <View style={styles.settingItem}>
       <View style={styles.settingItemLeft}>
-        <Icon name={icon} size={20} color="#6B7280" style={styles.settingIcon} />
+        {typeof icon === 'string' ? (
+          <Icon name={icon} size={20} color="#6B7280" style={styles.settingIcon} />
+        ) : (
+          <View style={styles.settingIcon}>{icon}</View>
+        )}
         <Text style={styles.settingTitle}>{title}</Text>
       </View>
       <Switch
@@ -73,12 +86,16 @@ const SettingsScreen = () => {
   const renderChevronItem = (icon, title, valueText, onPress) => (
     <TouchableOpacity style={styles.settingItem} onPress={onPress}>
       <View style={styles.settingItemLeft}>
-        <Icon name={icon} size={20} color="#6B7280" style={styles.settingIcon} />
+        {typeof icon === 'string' ? (
+          <Icon name={icon} size={20} color="#6B7280" style={styles.settingIcon} />
+        ) : (
+          <View style={styles.settingIcon}>{icon}</View>
+        )}
         <Text style={styles.settingTitle}>{title}</Text>
       </View>
       <View style={styles.settingItemRight}>
         {valueText ? <Text style={styles.settingValueText}>{valueText}</Text> : null}
-        <Icon name="chevron-right" size={20} color="#9CA3AF" />
+        <ChevronRightIcon width={12} height={12} color="#9CA3AF" />
       </View>
     </TouchableOpacity>
   );
@@ -93,36 +110,34 @@ const SettingsScreen = () => {
         
         {renderSectionHeader('MEDICATION PREFERENCES')}
         <View style={styles.sectionCard}>
-          {renderToggleItem('bell', 'Refill Reminders', 'refillReminders')}
+          {renderToggleItem(<RefillReminderIcon width={20} height={20} color="#6B7280" />, 'Refill Reminders', 'refillReminders')}
           <View style={styles.divider} />
-          {renderChevronItem('clock', 'Snooze Duration', `${settings.snoozeDuration} mins`, handleSnoozeDurationClick)}
+          {renderChevronItem(<SnoozeIcon width={20} height={20} color="#6B7280" />, 'Snooze Duration', `${settings.snoozeDuration} mins`, handleSnoozeDurationClick)}
           <View style={styles.divider} />
-          {renderToggleItem('image', 'Pill Image Display', 'pillImageDisplay')}
+          {renderToggleItem(<PillImageIcon width={20} height={20} color="#6B7280" />, 'Pill Image Display', 'pillImageDisplay')}
         </View>
 
         {renderSectionHeader('NOTIFICATIONS')}
         <View style={styles.sectionCard}>
-          {renderChevronItem('calendar', 'Daily Summary', null, () => {})}
+          {renderChevronItem(<DailySummaryIcon width={20} height={20} color="#6B7280" />, 'Daily Summary', null, () => {})}
           <View style={styles.divider} />
-          {renderToggleItem('alert-circle', 'Dose Alerts', 'doseAlerts')}
+          {renderToggleItem(<DoseAlertsIcon width={20} height={20} color="#6B7280" />, 'Dose Alerts', 'doseAlerts')}
           <View style={styles.divider} />
-          {renderChevronItem('volume-2', 'Sound & Vibration', null, () => {})}
+          {renderChevronItem(<SoundVibrationIcon width={20} height={20} color="#6B7280" />, 'Sound & Vibration', null, () => {})}
         </View>
 
         {renderSectionHeader('SECURITY & PRIVACY')}
         <View style={styles.sectionCard}>
-          {renderToggleItem('lock', 'Biometric Lock', 'biometricLock')}
-          <View style={styles.divider} />
-          {renderChevronItem('download', 'Data Export', null, () => {})}
+          {renderChevronItem(<DataExportIcon width={20} height={20} color="#6B7280" />, 'Data Export', null, () => {})}
         </View>
 
         {renderSectionHeader('SUPPORT & ABOUT')}
         <View style={styles.sectionCard}>
-          {renderChevronItem('help-circle', 'Help Center', null, () => {})}
+          {renderChevronItem(<HelpCenterIcon width={20} height={20} color="#6B7280" />, 'Help Center', null, () => {})}
           <View style={styles.divider} />
           <TouchableOpacity style={styles.settingItem}>
             <View style={styles.settingItemLeft}>
-              <Icon name="info" size={20} color="#6B7280" style={styles.settingIcon} />
+              <View style={styles.settingIcon}><AboutIcon width={20} height={20} color="#6B7280" /></View>
               <Text style={styles.settingTitle}>About MedTrack</Text>
             </View>
             <View style={styles.settingItemRight}>

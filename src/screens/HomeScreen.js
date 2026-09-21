@@ -86,14 +86,19 @@ const HomeScreen = () => {
           </View>
           <View style={styles.cardTextContent}>
             <View style={styles.cardTitleRow}>
-              <Text style={styles.medTitle}>{item.name}</Text>
-              {isTaken && <View style={styles.tagTaken}><Text style={styles.tagTakenText}>Taken</Text></View>}
-              {isUpcoming && <View style={styles.tagUpcoming}><Text style={styles.tagUpcomingText}>{item.status}</Text></View>}
+              <View style={styles.titleWithTag}>
+                <View style={styles.titleWrapper}>
+                  <Text style={[styles.medTitle, isTaken && styles.medTitleTaken]} numberOfLines={1}>{item.name}</Text>
+                  {isTaken && <View style={styles.strikethroughLine} />}
+                </View>
+                {isTaken && <View style={styles.tagTaken}><Text style={styles.tagTakenText}>Taken</Text></View>}
+                {isUpcoming && <View style={styles.tagUpcoming}><Text style={styles.tagUpcomingText}>{item.status}</Text></View>}
+              </View>
               {isMissed && <Text style={styles.textMissed}>Missed</Text>}
             </View>
             <Text style={styles.medSub}>{item.strength}{item.unit} • {item.expectedTime || 'PRN'}</Text>
           </View>
-          {isTaken && <MaterialIcon name="check-circle" size={24} color="#059669" />}
+          {isTaken && <MaterialIcon name="check-circle" size={24} color="#006A61" />}
         </View>
 
         {(isUpcoming || isMissed) && (
@@ -216,11 +221,15 @@ const styles = StyleSheet.create({
   iconWrapperSolidRed: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#FEE2E2', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
   cardTextContent: { flex: 1 },
   cardTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 10 },
-  medTitle: { fontSize: 17, fontWeight: '700', color: '#111827' },
+  titleWithTag: { flexDirection: 'row', alignItems: 'center', flexShrink: 1 },
+  titleWrapper: { justifyContent: 'center' },
+  medTitle: { fontSize: 17, fontWeight: '700', color: '#111827', flexShrink: 1 },
+  medTitleTaken: { color: '#6B7280' },
+  strikethroughLine: { position: 'absolute', height: 2, backgroundColor: '#6B7280', width: '100%', top: '50%', marginTop: -1 },
   medSub: { fontSize: 13, color: '#6B7280', marginTop: 4 },
-  tagTaken: { backgroundColor: '#ECFDF5', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
-  tagTakenText: { color: '#059669', fontSize: 10, fontWeight: '600' },
-  tagUpcoming: { backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
+  tagTaken: { backgroundColor: '#E6F0EF', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, marginLeft: 8 },
+  tagTakenText: { color: '#006A61', fontSize: 10, fontWeight: '600' },
+  tagUpcoming: { backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, marginLeft: 8 },
   tagUpcomingText: { color: '#4B5563', fontSize: 10, fontWeight: '600' },
   textMissed: { color: '#DC2626', fontSize: 10, fontWeight: '600', textAlign: 'right' },
   cardActions: { flexDirection: 'row', marginTop: 16, justifyContent: 'space-between' },
