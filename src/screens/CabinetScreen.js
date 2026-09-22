@@ -13,8 +13,9 @@ const CabinetScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [settings, setSettings] = useState({ refillReminders: true });
   
+  const [optionsModalVisible, setOptionsModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [medicineToDelete, setMedicineToDelete] = useState(null);
+  const [selectedMedicine, setSelectedMedicine] = useState(null);
 
   const loadMedicines = useCallback(() => {
     const meds = StorageService.getMedicines();
@@ -32,16 +33,29 @@ const CabinetScreen = ({ navigation }) => {
     m.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleDelete = (item) => {
-    setMedicineToDelete(item);
-    setDeleteModalVisible(true);
+  const handleOptions = (item) => {
+    setSelectedMedicine(item);
+    setOptionsModalVisible(true);
+  };
+
+  const handleDelete = () => {
+    setOptionsModalVisible(false);
+    // Add small delay to prevent modal stacking issues
+    setTimeout(() => {
+      setDeleteModalVisible(true);
+    }, 300);
+  };
+
+  const handleEdit = () => {
+    setOptionsModalVisible(false);
+    navigation.navigate('EditMedicine', { medicine: selectedMedicine });
   };
 
   const confirmDelete = async () => {
-    if (!medicineToDelete) return;
-    StorageService.deleteMedicine(medicineToDelete.id);
-    await NotificationService.cancelAlarms(medicineToDelete.id);
-    setMedicineToDelete(null);
+    if (!selectedMedicine) return;
+    StorageService.deleteMedicine(selectedMedicine.id);
+    await NotificationService.cancelAlarms(selectedMedicine.id);
+    setSelectedMedicine(null);
     setDeleteModalVisible(false);
     loadMedicines();
   };
@@ -65,7 +79,7 @@ const CabinetScreen = ({ navigation }) => {
           <View style={styles.cardTextContent}>
             <View style={styles.cardTitleRow}>
               <Text style={styles.medTitle}>{item.name}</Text>
-              <TouchableOpacity onPress={() => handleDelete(item)}>
+              <TouchableOpacity onPress={() => handleOptions(item)}>
                 <MaterialIcon name="more-vert" size={20} color="#4B5563" />
               </TouchableOpacity>
             </View>
@@ -151,13 +165,22 @@ const CabinetScreen = ({ navigation }) => {
       </TouchableOpacity>
 
       <CustomModal
+        visible={optionsModalVisible}
+        onClose={() => setOptionsModalVisible(false)}
+        title="Medicine Options"
+        message={`What would you like to do with ${selectedMedicine?.name}?`}
+        options={[
+          { text: 'Edit Inventory & Time', onPress: handleEdit },
+          { text: 'Delete Medicine', onPress: handleDelete, style: 'destructive' },
+          { text: 'Cancel', style: 'cancel' }
+        ]}
+      />
+
+      <CustomModal
         visible={deleteModalVisible}
-        onClose={() => {
-          setDeleteModalVisible(false);
-          setMedicineToDelete(null);
-        }}
+        onClose={() => setDeleteModalVisible(false)}
         title="Delete Medicine"
-        message={medicineToDelete ? `Are you sure you want to delete ${medicineToDelete.name}?` : ''}
+        message={`Are you sure you want to delete ${selectedMedicine?.name}? This action cannot be undone.`}
         options={[
           { text: 'Cancel', style: 'cancel' },
           { text: 'Delete', style: 'destructive', onPress: confirmDelete }

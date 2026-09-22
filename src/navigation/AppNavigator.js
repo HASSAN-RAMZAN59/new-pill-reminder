@@ -6,6 +6,7 @@ import SplashScreen from '../screens/SplashScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import AddMedicineScreen from '../screens/AddMedicineScreen';
+import EditMedicineScreen from '../screens/EditMedicineScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,11 @@ const AppNavigator = () => {
         <Stack.Screen 
           name="AddMedicine" 
           component={AddMedicineScreen}
+          options={{ presentation: 'modal' }} 
+        />
+        <Stack.Screen 
+          name="EditMedicine" 
+          component={EditMedicineScreen}
           options={{ presentation: 'modal' }} 
         />
       </Stack.Navigator>
