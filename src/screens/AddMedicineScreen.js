@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, SafeAreaView, Platform, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import uuid from 'react-native-uuid';
 import { StorageService } from '../services/StorageService';
 import NotificationService from '../services/NotificationService';
+import CustomModal from '../components/CustomModal';
 
 const TYPES = ['Pill', 'Liquid', 'Injection', 'Capsule', 'Drops'];
-const FREQUENCIES = ['Daily', 'Weekly', 'As Needed'];
+const FREQUENCIES = ['Daily', 'Weekly'];
 
 const AddMedicineScreen = ({ navigation }) => {
   const [step, setStep] = useState(1);
@@ -22,8 +24,13 @@ const AddMedicineScreen = ({ navigation }) => {
   const [frequency, setFrequency] = useState('Daily');
   const [reminders, setReminders] = useState([new Date()]); // Array of Date objects
   const [showPickerForIndex, setShowPickerForIndex] = useState(null);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
 
   const handleNext = () => {
+    if (step === 1 && !name.trim()) {
+      setErrorModalVisible(true);
+      return;
+    }
     if (step < 3) setStep(step + 1);
   };
 
@@ -74,7 +81,7 @@ const AddMedicineScreen = ({ navigation }) => {
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Basics</Text>
       
-      <Text style={styles.label}>Medicine Name</Text>
+      <Text style={styles.label}>Medicine Name <Text style={{color: '#BA1A1A'}}>*</Text></Text>
       <TextInput style={styles.input} placeholder="e.g. Lisinopril" value={name} onChangeText={setName} />
 
       <Text style={styles.label}>Type</Text>
@@ -88,16 +95,16 @@ const AddMedicineScreen = ({ navigation }) => {
 
       <View style={styles.row}>
         <View style={{flex: 1, marginRight: 10}}>
-          <Text style={styles.label}>Strength</Text>
+          <Text style={styles.label}>Strength (Optional)</Text>
           <TextInput style={styles.input} placeholder="10" keyboardType="numeric" value={strength} onChangeText={setStrength} />
         </View>
         <View style={{flex: 1, marginLeft: 10}}>
-          <Text style={styles.label}>Unit</Text>
+          <Text style={styles.label}>Unit (Optional)</Text>
           <TextInput style={styles.input} placeholder="mg" value={unit} onChangeText={setUnit} />
         </View>
       </View>
 
-      <Text style={styles.label}>Total Quantity (Inventory)</Text>
+      <Text style={styles.label}>Total Quantity / Inventory (Optional)</Text>
       <TextInput style={styles.input} placeholder="30" keyboardType="numeric" value={totalQuantity} onChangeText={setTotalQuantity} />
     </View>
   );
@@ -115,38 +122,36 @@ const AddMedicineScreen = ({ navigation }) => {
         ))}
       </View>
 
-      {frequency !== 'As Needed' && (
-        <View style={styles.remindersSection}>
-          <Text style={styles.label}>Reminder Times</Text>
-          {reminders.map((time, index) => (
-            <View key={index} style={styles.reminderRow}>
-              <TouchableOpacity style={styles.timePickerBtn} onPress={() => setShowPickerForIndex(index)}>
-                <Icon name="clock" size={16} color="#4B5563" style={{marginRight: 8}} />
-                <Text style={styles.timeText}>
-                  {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </Text>
+      <View style={styles.remindersSection}>
+        <Text style={styles.label}>Reminder Times</Text>
+        {reminders.map((time, index) => (
+          <View key={index} style={styles.reminderRow}>
+            <TouchableOpacity style={styles.timePickerBtn} onPress={() => setShowPickerForIndex(index)}>
+              <Icon name="clock" size={16} color="#4B5563" style={{marginRight: 8}} />
+              <Text style={styles.timeText}>
+                {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </Text>
+            </TouchableOpacity>
+            {reminders.length > 1 && (
+              <TouchableOpacity onPress={() => removeReminderTime(index)}>
+                <Icon name="x-circle" size={24} color="#BA1A1A" />
               </TouchableOpacity>
-              {reminders.length > 1 && (
-                <TouchableOpacity onPress={() => removeReminderTime(index)}>
-                  <Icon name="x-circle" size={24} color="#BA1A1A" />
-                </TouchableOpacity>
-              )}
-              {showPickerForIndex === index && (
-                <DateTimePicker
-                  value={time}
-                  mode="time"
-                  display="default"
-                  onChange={(event, date) => handleTimeChange(event, date, index)}
-                />
-              )}
-            </View>
-          ))}
-          <TouchableOpacity style={styles.addTimeBtn} onPress={addReminderTime}>
-            <Icon name="plus" size={16} color="#0285FF" />
-            <Text style={styles.addTimeText}>Add another time</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+            )}
+            {showPickerForIndex === index && (
+              <DateTimePicker
+                value={time}
+                mode="time"
+                display="default"
+                onChange={(event, date) => handleTimeChange(event, date, index)}
+              />
+            )}
+          </View>
+        ))}
+        <TouchableOpacity style={styles.addTimeBtn} onPress={addReminderTime}>
+          <Icon name="plus" size={16} color="#0285FF" />
+          <Text style={styles.addTimeText}>Add another time</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -169,16 +174,14 @@ const AddMedicineScreen = ({ navigation }) => {
         <Text style={styles.summaryLabel}>Schedule</Text>
         <Text style={styles.summaryValue}>{frequency}</Text>
         
-        {frequency !== 'As Needed' && (
-          <View>
-            <Text style={styles.summaryLabel}>Times</Text>
-            {reminders.map((time, i) => (
-              <Text key={i} style={styles.summaryValue}>
-                • {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </Text>
-            ))}
-          </View>
-        )}
+        <View>
+          <Text style={styles.summaryLabel}>Times</Text>
+          {reminders.map((time, i) => (
+            <Text key={i} style={styles.summaryValue}>
+              • {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </Text>
+          ))}
+        </View>
       </View>
     </View>
   );
@@ -211,12 +214,20 @@ const AddMedicineScreen = ({ navigation }) => {
               <Text style={styles.primaryBtnText}>Continue</Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-              <Text style={styles.saveBtnText}>Save Medicine</Text>
+            <TouchableOpacity style={styles.primaryBtn} onPress={handleSave}>
+              <Text style={styles.primaryBtnText}>Save Medicine</Text>
             </TouchableOpacity>
           )}
         </View>
       </KeyboardAvoidingView>
+
+      <CustomModal
+        visible={errorModalVisible}
+        onClose={() => setErrorModalVisible(false)}
+        title="Required Field"
+        message="Please enter the medicine name to continue."
+        options={[{ text: 'OK', onPress: () => setErrorModalVisible(false) }]}
+      />
     </SafeAreaView>
   );
 };
@@ -399,17 +410,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryBtnText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  saveBtn: {
-    backgroundColor: '#006F66',
-    paddingVertical: 16,
-    borderRadius: 30,
-    alignItems: 'center',
-  },
-  saveBtnText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',

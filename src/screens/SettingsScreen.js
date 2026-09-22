@@ -127,7 +127,7 @@ const SettingsScreen = ({ navigation }) => {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        
+
         {renderSectionHeader('MEDICATION PREFERENCES')}
         <View style={styles.sectionCard}>
           {renderToggleItem(<RefillReminderIcon width={20} height={20} color="#6B7280" />, 'Refill Reminders', 'refillReminders')}
@@ -144,9 +144,9 @@ const SettingsScreen = ({ navigation }) => {
             <>
               <View style={styles.divider} />
               {renderChevronItem(
-                <View style={{ width: 20, height: 20 }} />, 
-                'Summary Time', 
-                formatTime(settings.dailySummaryTime), 
+                <View style={{ width: 20, height: 20 }} />,
+                'Summary Time',
+                formatTime(settings.dailySummaryTime),
                 () => setShowTimePicker(true)
               )}
             </>
@@ -193,11 +193,11 @@ const SettingsScreen = ({ navigation }) => {
           value={
             settings.dailySummaryTime && settings.dailySummaryTime !== 'Off'
               ? (() => {
-                  const d = new Date();
-                  const [h, m] = settings.dailySummaryTime.split(':').map(Number);
-                  d.setHours(h, m, 0, 0);
-                  return d;
-                })()
+                const d = new Date();
+                const [h, m] = settings.dailySummaryTime.split(':').map(Number);
+                d.setHours(h, m, 0, 0);
+                return d;
+              })()
               : new Date()
           }
           mode="time"
@@ -212,10 +212,12 @@ const SettingsScreen = ({ navigation }) => {
         title="Help Center"
         message="Need help with MedTrack? Contact our support team for assistance."
         options={[
-          { text: 'Email Support', onPress: () => {
-            setHelpModalVisible(false);
-            Linking.openURL('mailto:support@medtrack.com?subject=MedTrack Support');
-          }},
+          {
+            text: 'Email Support', onPress: () => {
+              setHelpModalVisible(false);
+              Linking.openURL('mailto:support@medtrack.com?subject=MedTrack Support');
+            }
+          },
           { text: 'Cancel', style: 'cancel' }
         ]}
       />
