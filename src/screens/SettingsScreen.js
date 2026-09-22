@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Platform, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
@@ -32,6 +32,7 @@ const SettingsScreen = ({ navigation }) => {
 
   const [snoozeModalVisible, setSnoozeModalVisible] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [helpModalVisible, setHelpModalVisible] = useState(false);
 
   const loadSettings = useCallback(() => {
     setSettings(StorageService.getSettings());
@@ -156,14 +157,10 @@ const SettingsScreen = ({ navigation }) => {
           {renderToggleItem(<SoundVibrationIcon width={20} height={20} color="#6B7280" />, 'Sound & Vibration', 'soundVibration')}
         </View>
 
-        {renderSectionHeader('SECURITY & PRIVACY')}
-        <View style={styles.sectionCard}>
-          {renderChevronItem(<DataExportIcon width={20} height={20} color="#6B7280" />, 'Data Export', null, () => {})}
-        </View>
 
         {renderSectionHeader('SUPPORT & ABOUT')}
         <View style={styles.sectionCard}>
-          {renderChevronItem(<HelpCenterIcon width={20} height={20} color="#6B7280" />, 'Help Center', null, () => {})}
+          {renderChevronItem(<HelpCenterIcon width={20} height={20} color="#6B7280" />, 'Help Center', null, () => setHelpModalVisible(true))}
           <View style={styles.divider} />
           <TouchableOpacity style={styles.settingItem}>
             <View style={styles.settingItemLeft}>
@@ -208,6 +205,20 @@ const SettingsScreen = ({ navigation }) => {
           onChange={handleTimeChange}
         />
       )}
+
+      <CustomModal
+        visible={helpModalVisible}
+        onClose={() => setHelpModalVisible(false)}
+        title="Help Center"
+        message="Need help with MedTrack? Contact our support team for assistance."
+        options={[
+          { text: 'Email Support', onPress: () => {
+            setHelpModalVisible(false);
+            Linking.openURL('mailto:support@medtrack.com?subject=MedTrack Support');
+          }},
+          { text: 'Cancel', style: 'cancel' }
+        ]}
+      />
     </SafeAreaView>
   );
 };
