@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
@@ -7,6 +7,10 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { StorageService } from '../services/StorageService';
 import NotificationService from '../services/NotificationService';
 import CustomModal from '../components/CustomModal';
+
+import PillSvg from '../assets/add med/Container (2).svg';
+import LiquidSvg from '../assets/add med/Container (3).svg';
+import InjectionSvg from '../assets/add med/Container (4).svg';
 
 // Helper to get array of dates around today
 const getDatesAround = (centerDate, numDays = 3) => {
@@ -126,12 +130,14 @@ const HomeScreen = () => {
       <View key={`${item.id}-${item.expectedTime}`} style={isMissed ? styles.cardWarning : (isUpcoming ? styles.cardActive : styles.cardNormal)}>
         <View style={styles.cardHeader}>
           <View style={isMissed ? styles.iconWrapperSolidRed : (isTaken ? styles.iconWrapperBlue : styles.iconWrapperSolidBlue)}>
-            {settings.pillImageDisplay ? (
-              <Icon name={item.type === 'Liquid' ? 'droplet' : (item.type === 'Injection' ? 'activity' : 'plus-square')} size={20} color={isTaken ? "#0285FF" : "#FFF"} />
+            {item.imageUri ? (
+              <Image source={{ uri: item.imageUri }} style={{ width: 44, height: 44, borderRadius: 22 }} />
+            ) : item.type === 'Liquid' ? (
+              <LiquidSvg width={20} height={20} color={isMissed ? "#BA1A1A" : (isTaken ? "#0285FF" : "#FFF")} />
+            ) : item.type === 'Injection' ? (
+              <InjectionSvg width={20} height={20} color={isMissed ? "#BA1A1A" : (isTaken ? "#0285FF" : "#FFF")} />
             ) : (
-              <Text style={{ fontSize: 16, fontWeight: 'bold', color: isTaken ? "#0285FF" : "#FFF" }}>
-                {item.name ? item.name.charAt(0).toUpperCase() : 'M'}
-              </Text>
+              <PillSvg width={20} height={20} color={isMissed ? "#BA1A1A" : (isTaken ? "#0285FF" : "#FFF")} />
             )}
           </View>
           <View style={styles.cardTextContent}>
