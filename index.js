@@ -7,6 +7,7 @@ import App from './App';
 import { name as appName } from './app.json';
 import notifee, { EventType } from '@notifee/react-native';
 import { StorageService } from './src/services/StorageService';
+import NotificationService from './src/services/NotificationService';
 
 notifee.onBackgroundEvent(async ({ type, detail }) => {
   const { notification, pressAction } = detail;
@@ -22,7 +23,9 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
       const meds = StorageService.getMedicines();
       const med = meds.find(m => m.id === medicineId);
       if (med) {
-        StorageService.updateMedicine(medicineId, { totalQuantity: Math.max(0, med.totalQuantity - 1) });
+        const newQty = Math.max(0, med.totalQuantity - 1);
+        StorageService.updateMedicine(medicineId, { totalQuantity: newQty });
+        await NotificationService.checkAndTriggerRefillAlarm(med, newQty);
       }
       await notifee.cancelNotification(notification.id);
     } else if (pressAction.id === 'snooze') {

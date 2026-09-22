@@ -95,6 +95,23 @@ class NotificationService {
       }
     }
   }
+  async checkAndTriggerRefillAlarm(medicine, newQuantity) {
+    const settings = StorageService.getSettings();
+    if (!settings.refillReminders) return;
+    
+    if (newQuantity <= 5 && newQuantity >= 0) {
+      if (!this.channelId) await this.init();
+
+      await notifee.displayNotification({
+        title: '⚠️ Refill Reminder',
+        body: `You are running low on ${medicine.name}. Only ${newQuantity} left!`,
+        android: {
+          channelId: this.channelId,
+          importance: AndroidImportance.HIGH,
+        },
+      });
+    }
+  }
 }
 
 export default new NotificationService();

@@ -5,6 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { StorageService } from '../services/StorageService';
+import NotificationService from '../services/NotificationService';
 
 // Helper to get array of dates around today
 const getDatesAround = (centerDate, numDays = 3) => {
@@ -66,7 +67,9 @@ const HomeScreen = () => {
       const meds = StorageService.getMedicines();
       const med = meds.find(m => m.id === item.id);
       if (med) {
-        StorageService.updateMedicine(item.id, { totalQuantity: Math.max(0, med.totalQuantity - 1) });
+        const newQty = Math.max(0, med.totalQuantity - 1);
+        StorageService.updateMedicine(item.id, { totalQuantity: newQty });
+        NotificationService.checkAndTriggerRefillAlarm(med, newQty);
       }
     }
     
