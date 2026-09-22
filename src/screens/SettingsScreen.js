@@ -153,7 +153,7 @@ const SettingsScreen = ({ navigation }) => {
           <View style={styles.divider} />
           {renderToggleItem(<DoseAlertsIcon width={20} height={20} color="#6B7280" />, 'Dose Alerts', 'doseAlerts')}
           <View style={styles.divider} />
-          {renderChevronItem(<SoundVibrationIcon width={20} height={20} color="#6B7280" />, 'Sound & Vibration', null, () => {})}
+          {renderToggleItem(<SoundVibrationIcon width={20} height={20} color="#6B7280" />, 'Sound & Vibration', 'soundVibration')}
         </View>
 
         {renderSectionHeader('SECURITY & PRIVACY')}

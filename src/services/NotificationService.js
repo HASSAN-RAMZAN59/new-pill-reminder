@@ -3,7 +3,8 @@ import { StorageService } from './StorageService';
 
 class NotificationService {
   constructor() {
-    this.channelId = null;
+    this.channelSoundId = null;
+    this.channelSilentId = null;
   }
 
   async init() {
@@ -11,12 +12,28 @@ class NotificationService {
     await notifee.requestPermission();
 
     // Create a channel (required for Android)
-    this.channelId = await notifee.createChannel({
-      id: 'pill-reminders',
-      name: 'Pill Reminders',
+    this.channelSoundId = await notifee.createChannel({
+      id: 'pill-reminders-sound',
+      name: 'Pill Reminders (Sound)',
       importance: AndroidImportance.HIGH,
       sound: 'default',
+      vibration: true,
     });
+    
+    this.channelSilentId = await notifee.createChannel({
+      id: 'pill-reminders-silent',
+      name: 'Pill Reminders (Silent)',
+      importance: AndroidImportance.HIGH,
+      vibration: false,
+    });
+  }
+
+  async getChannelId() {
+    if (!this.channelSoundId || !this.channelSilentId) {
+      await this.init();
+    }
+    const settings = StorageService.getSettings();
+    return settings.soundVibration ? this.channelSoundId : this.channelSilentId;
   }
 
   async scheduleMedicationAlarms(medicine) {
@@ -25,7 +42,7 @@ class NotificationService {
     const settings = StorageService.getSettings();
     if (!settings.doseAlerts) return;
 
-    if (!this.channelId) await this.init();
+    const channelId = await this.getChannelId();
 
     // Clear existing triggers for this medicine if any (simple implementation: we don't track notification IDs yet, 
     // but in a production app we'd map medicine ID to notification IDs to cancel them on edit/delete)
@@ -56,7 +73,7 @@ class NotificationService {
           title: '💊 Time to take your medication!',
           body: `It's time to take ${medicine.strength}${medicine.unit} of ${medicine.name}.`,
           android: {
-            channelId: this.channelId,
+            channelId: channelId,
             importance: AndroidImportance.HIGH,
             actions: [
               {
@@ -108,13 +125,13 @@ class NotificationService {
     if (!settings.refillReminders) return;
     
     if (newQuantity <= 5 && newQuantity >= 0) {
-      if (!this.channelId) await this.init();
+      const channelId = await this.getChannelId();
 
       await notifee.displayNotification({
         title: '⚠️ Refill Reminder',
         body: `You are running low on ${medicine.name}. Only ${newQuantity} left!`,
         android: {
-          channelId: this.channelId,
+          channelId: channelId,
           importance: AndroidImportance.HIGH,
         },
       });
@@ -124,7 +141,7 @@ class NotificationService {
     const settings = StorageService.getSettings();
     const snoozeMinutes = settings.snoozeDuration || 15;
 
-    if (!this.channelId) await this.init();
+    const channelId = await this.getChannelId();
 
     const trigger = {
       type: TriggerType.TIMESTAMP,
@@ -138,7 +155,7 @@ class NotificationService {
         title: `⏰ Snoozed: ${medicine.name}`,
         body: `It's time to take ${medicine.strength}${medicine.unit} of ${medicine.name}.`,
         android: {
-          channelId: this.channelId,
+          channelId: channelId,
           importance: AndroidImportance.HIGH,
           actions: [
             { title: 'Take', pressAction: { id: 'take' } },
@@ -167,7 +184,7 @@ class NotificationService {
     const taken = daily.filter(i => i.status === 'Taken').length;
     const total = daily.length;
 
-    if (!this.channelId) await this.init();
+    const channelId = await this.getChannelId();
 
     // Parse the configured time
     const [hours, minutes] = settings.dailySummaryTime.split(':').map(Number);
@@ -192,7 +209,7 @@ class NotificationService {
         title: '📊 Daily Summary',
         body: `You've taken ${taken}/${total} medications today. ${taken === total ? 'Great job!' : 'Keep it up!'}`,
         android: {
-          channelId: this.channelId,
+          channelId: channelId,
           importance: AndroidImportance.DEFAULT,
         },
       },
