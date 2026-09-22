@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import { StorageService } from '../services/StorageService';
 import NotificationService from '../services/NotificationService';
+import CustomModal from '../components/CustomModal';
 import SnoozeIcon from '../assets/settings/Container (1).svg';
 import PillImageIcon from '../assets/settings/Container (2).svg';
 import DailySummaryIcon from '../assets/settings/Container (3).svg';
@@ -26,6 +27,8 @@ const SettingsScreen = ({ navigation }) => {
     doseAlerts: true,
     soundVibration: true,
   });
+
+  const [snoozeModalVisible, setSnoozeModalVisible] = useState(false);
 
   const loadSettings = useCallback(() => {
     setSettings(StorageService.getSettings());
@@ -49,16 +52,7 @@ const SettingsScreen = ({ navigation }) => {
   };
 
   const handleSnoozeDurationClick = () => {
-    Alert.alert(
-      'Snooze Duration',
-      'Select default snooze time',
-      [
-        { text: '5 mins', onPress: () => updateSetting('snoozeDuration', 5) },
-        { text: '15 mins', onPress: () => updateSetting('snoozeDuration', 15) },
-        { text: '30 mins', onPress: () => updateSetting('snoozeDuration', 30) },
-        { text: 'Cancel', style: 'cancel' }
-      ]
-    );
+    setSnoozeModalVisible(true);
   };
 
   const renderSectionHeader = (title) => (
@@ -151,6 +145,19 @@ const SettingsScreen = ({ navigation }) => {
         </View>
 
       </ScrollView>
+
+      <CustomModal
+        visible={snoozeModalVisible}
+        onClose={() => setSnoozeModalVisible(false)}
+        title="Snooze Duration"
+        message="Select default snooze time"
+        options={[
+          { text: '5 minutes', onPress: () => updateSetting('snoozeDuration', 5) },
+          { text: '15 minutes', onPress: () => updateSetting('snoozeDuration', 15) },
+          { text: '30 minutes', onPress: () => updateSetting('snoozeDuration', 30) },
+          { text: 'Cancel', style: 'cancel' }
+        ]}
+      />
     </SafeAreaView>
   );
 };

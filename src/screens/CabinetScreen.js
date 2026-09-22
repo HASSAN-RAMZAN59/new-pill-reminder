@@ -1,16 +1,20 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { StorageService } from '../services/StorageService';
 import NotificationService from '../services/NotificationService';
+import CustomModal from '../components/CustomModal';
 
 const CabinetScreen = ({ navigation }) => {
   const [medicines, setMedicines] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [settings, setSettings] = useState({ refillReminders: true });
+  
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [medicineToDelete, setMedicineToDelete] = useState(null);
 
   const loadMedicines = useCallback(() => {
     const meds = StorageService.getMedicines();
@@ -29,22 +33,17 @@ const CabinetScreen = ({ navigation }) => {
   );
 
   const handleDelete = (item) => {
-    Alert.alert(
-      'Delete Medicine',
-      `Are you sure you want to delete ${item.name}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
-          style: 'destructive',
-          onPress: async () => {
-            StorageService.deleteMedicine(item.id);
-            await NotificationService.cancelAlarms(item.id);
-            loadMedicines();
-          } 
-        }
-      ]
-    );
+    setMedicineToDelete(item);
+    setDeleteModalVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!medicineToDelete) return;
+    StorageService.deleteMedicine(medicineToDelete.id);
+    await NotificationService.cancelAlarms(medicineToDelete.id);
+    setMedicineToDelete(null);
+    setDeleteModalVisible(false);
+    loadMedicines();
   };
 
   const renderMedicineCard = ({ item }) => {
@@ -144,6 +143,20 @@ const CabinetScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('AddMedicine')}>
         <Icon name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
+
+      <CustomModal
+        visible={deleteModalVisible}
+        onClose={() => {
+          setDeleteModalVisible(false);
+          setMedicineToDelete(null);
+        }}
+        title="Delete Medicine"
+        message={medicineToDelete ? `Are you sure you want to delete ${medicineToDelete.name}?` : ''}
+        options={[
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Delete', style: 'destructive', onPress: confirmDelete }
+        ]}
+      />
     </SafeAreaView>
   );
 };
