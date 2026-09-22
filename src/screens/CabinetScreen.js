@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
@@ -7,6 +7,10 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { StorageService } from '../services/StorageService';
 import NotificationService from '../services/NotificationService';
 import CustomModal from '../components/CustomModal';
+
+import PillSvg from '../assets/add med/Container (2).svg';
+import LiquidSvg from '../assets/add med/Container (3).svg';
+import InjectionSvg from '../assets/add med/Container (4).svg';
 
 const CabinetScreen = ({ navigation }) => {
   const [medicines, setMedicines] = useState([]);
@@ -83,12 +87,14 @@ const CabinetScreen = ({ navigation }) => {
       <View style={isLowStock ? styles.cardHighlight : styles.cardNormal}>
         <View style={styles.cardHeader}>
           <View style={isLowStock ? styles.iconWrapperLightRed : styles.iconWrapperLightBlue}>
-            {settings.pillImageDisplay ? (
-              <Icon name={item.type === 'Liquid' ? 'droplet' : 'link-2'} size={20} color={isLowStock ? "#BA1A1A" : "#0285FF"} />
+            {item.imageUri ? (
+              <Image source={{ uri: item.imageUri }} style={{ width: 44, height: 44, borderRadius: 10 }} />
+            ) : item.type === 'Liquid' ? (
+              <LiquidSvg width={24} height={24} color={isLowStock ? "#BA1A1A" : "#0285FF"} />
+            ) : item.type === 'Injection' ? (
+              <InjectionSvg width={24} height={24} color={isLowStock ? "#BA1A1A" : "#0285FF"} />
             ) : (
-              <Text style={{ fontSize: 16, fontWeight: 'bold', color: isLowStock ? "#BA1A1A" : "#0285FF" }}>
-                {item.name ? item.name.charAt(0).toUpperCase() : 'M'}
-              </Text>
+              <PillSvg width={24} height={24} color={isLowStock ? "#BA1A1A" : "#0285FF"} />
             )}
           </View>
           <View style={styles.cardTextContent}>
