@@ -1,4 +1,4 @@
-import notifee, { TriggerType, AndroidImportance } from '@notifee/react-native';
+import notifee, { TriggerType, AndroidImportance, RepeatFrequency } from '@notifee/react-native';
 import { StorageService } from './StorageService';
 
 class NotificationService {
@@ -47,7 +47,7 @@ class NotificationService {
       const trigger = {
         type: TriggerType.TIMESTAMP,
         timestamp: triggerDate.getTime(),
-        repeatFrequency: medicine.frequency === 'Daily' ? 'daily' : 'weekly',
+        repeatFrequency: medicine.frequency === 'Daily' ? RepeatFrequency.DAILY : RepeatFrequency.WEEKLY,
       };
 
       await notifee.createTriggerNotification(
