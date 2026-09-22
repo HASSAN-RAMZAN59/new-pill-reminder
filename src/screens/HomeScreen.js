@@ -71,6 +71,12 @@ const HomeScreen = () => {
         StorageService.updateMedicine(item.id, { totalQuantity: newQty });
         NotificationService.checkAndTriggerRefillAlarm(med, newQty);
       }
+    } else if (action === 'Snoozed') {
+      const meds = StorageService.getMedicines();
+      const med = meds.find(m => m.id === item.id);
+      if (med) {
+        NotificationService.scheduleSnooze(med);
+      }
     }
     
     loadSchedules();

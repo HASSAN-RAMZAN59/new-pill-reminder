@@ -112,6 +112,35 @@ class NotificationService {
       });
     }
   }
+  async scheduleSnooze(medicine) {
+    const settings = StorageService.getSettings();
+    const snoozeMinutes = settings.snoozeDuration || 15;
+
+    if (!this.channelId) await this.init();
+
+    const trigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: Date.now() + snoozeMinutes * 60000, 
+    };
+
+    await notifee.createTriggerNotification(
+      {
+        // Use a unique ID for the snoozed alarm
+        id: `${medicine.id}-snooze-${Date.now()}`,
+        title: `⏰ Snoozed: ${medicine.name}`,
+        body: `It's time to take ${medicine.strength}${medicine.unit} of ${medicine.name}.`,
+        android: {
+          channelId: this.channelId,
+          importance: AndroidImportance.HIGH,
+          actions: [
+            { title: 'Take', pressAction: { id: 'take' } },
+            { title: 'Snooze', pressAction: { id: 'snooze' } },
+          ],
+        },
+      },
+      trigger,
+    );
+  }
 }
 
 export default new NotificationService();

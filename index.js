@@ -30,10 +30,13 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
       await notifee.cancelNotification(notification.id);
     } else if (pressAction.id === 'snooze') {
       StorageService.logDose(medicineId, expectedTime, dateString, 'Snoozed');
-      // Reschedule for 15 mins later
+      // Reschedule for configured snooze duration
+      const settings = StorageService.getSettings();
+      const snoozeMins = settings.snoozeDuration || 15;
+      
       const trigger = {
         type: 0, // TIMESTAMP
-        timestamp: Date.now() + 15 * 60000, 
+        timestamp: Date.now() + snoozeMins * 60000, 
       };
       await notifee.createTriggerNotification(notification, trigger);
     }
