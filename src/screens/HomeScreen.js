@@ -147,7 +147,7 @@ const HomeScreen = () => {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
-        {/* Date Info Section */}
+
         <View style={styles.dateHeader}>
           <View>
             <Text style={styles.todayTitle}>
@@ -161,7 +161,7 @@ const HomeScreen = () => {
           </View>
         </View>
 
-        {/* Date Selector */}
+
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateSelector}>
           {datesList.map((d, index) => {
             const isActive = d.toISOString().split('T')[0] === selectedDateString;

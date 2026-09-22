@@ -133,7 +133,7 @@ const TrendsScreen = () => {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
-        {/* Hero Metric */}
+
         <View style={styles.heroCard}>
           <Text style={styles.heroLabel}>Overall Adherence</Text>
           <Text style={styles.heroValue}>{analytics.adherencePercent}%</Text>

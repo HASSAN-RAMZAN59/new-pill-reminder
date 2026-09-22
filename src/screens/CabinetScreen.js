@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { StorageService } from '../services/StorageService';
+import NotificationService from '../services/NotificationService';
 
 const CabinetScreen = ({ navigation }) => {
   const [medicines, setMedicines] = useState([]);
@@ -27,6 +28,25 @@ const CabinetScreen = ({ navigation }) => {
     m.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleDelete = (item) => {
+    Alert.alert(
+      'Delete Medicine',
+      `Are you sure you want to delete ${item.name}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: async () => {
+            StorageService.deleteMedicine(item.id);
+            await NotificationService.cancelAlarms(item.id);
+            loadMedicines();
+          } 
+        }
+      ]
+    );
+  };
+
   const renderMedicineCard = ({ item }) => {
     // Basic logic for stock indicators
     const isLowStock = settings.refillReminders && item.totalQuantity <= 5;
@@ -40,7 +60,7 @@ const CabinetScreen = ({ navigation }) => {
           <View style={styles.cardTextContent}>
             <View style={styles.cardTitleRow}>
               <Text style={styles.medTitle}>{item.name}</Text>
-              <TouchableOpacity onPress={() => { /* Edit/Delete options */ }}>
+              <TouchableOpacity onPress={() => handleDelete(item)}>
                 <MaterialIcon name="more-vert" size={20} color="#4B5563" />
               </TouchableOpacity>
             </View>
@@ -82,7 +102,7 @@ const CabinetScreen = ({ navigation }) => {
       </View>
 
       <View style={{ flex: 1, paddingHorizontal: 20 }}>
-        {/* Search Bar */}
+
         <View style={styles.searchContainer}>
           <Icon name="search" size={20} color="#9CA3AF" style={styles.searchIcon} />
           <TextInput 
@@ -94,7 +114,7 @@ const CabinetScreen = ({ navigation }) => {
           />
         </View>
 
-        {/* Filters */}
+
         <View style={styles.filterRow}>
           <TouchableOpacity style={styles.filterBtn}>
             <MaterialIcon name="filter-list" size={18} color="#4B5563" />
@@ -120,7 +140,7 @@ const CabinetScreen = ({ navigation }) => {
         />
       </View>
 
-      {/* Floating Action Button */}
+
       <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('AddMedicine')}>
         <Icon name="plus" size={24} color="#FFF" />
       </TouchableOpacity>

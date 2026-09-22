@@ -51,12 +51,12 @@ const OnboardingScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Top Image Section */}
+
       <View style={styles.imageContainer}>
         <CurrentIcon width={width * 0.75} height={width * 0.75} />
       </View>
 
-      {/* Text Content Section */}
+
       <View style={styles.textContainer}>
         <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>
           {currentData.title}
@@ -67,7 +67,7 @@ const OnboardingScreen = ({ navigation }) => {
         <Text style={styles.description}>{currentData.description}</Text>
       </View>
 
-      {/* Pagination Dots */}
+
       <View style={styles.paginationContainer}>
         {onboardingData.map((_, index) => (
           <View
@@ -80,7 +80,7 @@ const OnboardingScreen = ({ navigation }) => {
         ))}
       </View>
 
-      {/* Buttons Section */}
+
       <View style={styles.bottomContainer}>
         <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
           <Text style={styles.nextButtonText}>

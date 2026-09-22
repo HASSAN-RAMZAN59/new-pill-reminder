@@ -191,10 +191,10 @@ const AddMedicineScreen = ({ navigation }) => {
             <Icon name={step === 1 ? 'x' : 'arrow-left'} size={24} color="#111827" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Add Medicine</Text>
-          <View style={{width: 24}} /> {/* Spacer */}
+          <View style={{width: 24}} />
         </View>
 
-        {/* Progress Bar */}
+
         <View style={styles.progressContainer}>
           <View style={[styles.progressFill, { width: `${(step / 3) * 100}%` }]} />
         </View>
