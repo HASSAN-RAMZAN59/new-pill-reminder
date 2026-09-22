@@ -27,6 +27,7 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
         StorageService.updateMedicine(medicineId, { totalQuantity: newQty });
         await NotificationService.checkAndTriggerRefillAlarm(med, newQty);
       }
+      await NotificationService.scheduleDailySummary();
       await notifee.cancelNotification(notification.id);
     } else if (pressAction.id === 'snooze') {
       StorageService.logDose(medicineId, expectedTime, dateString, 'Snoozed');
@@ -39,6 +40,7 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
         timestamp: Date.now() + snoozeMins * 60000, 
       };
       await notifee.createTriggerNotification(notification, trigger);
+      await NotificationService.scheduleDailySummary();
     }
   }
 });

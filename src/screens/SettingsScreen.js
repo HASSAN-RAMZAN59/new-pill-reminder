@@ -1,11 +1,12 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import { StorageService } from '../services/StorageService';
 import NotificationService from '../services/NotificationService';
 import CustomModal from '../components/CustomModal';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import SnoozeIcon from '../assets/settings/Container (1).svg';
 import PillImageIcon from '../assets/settings/Container (2).svg';
 import DailySummaryIcon from '../assets/settings/Container (3).svg';
@@ -24,11 +25,13 @@ const SettingsScreen = ({ navigation }) => {
     snoozeDuration: 15,
     pillImageDisplay: true,
     dailySummary: true,
+    dailySummaryTime: '20:00',
     doseAlerts: true,
     soundVibration: true,
   });
 
   const [snoozeModalVisible, setSnoozeModalVisible] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const loadSettings = useCallback(() => {
     setSettings(StorageService.getSettings());
@@ -46,13 +49,31 @@ const SettingsScreen = ({ navigation }) => {
     StorageService.updateSettings({ [key]: value });
 
     // Handle global side effects
-    if (key === 'doseAlerts') {
+    if (key === 'doseAlerts' || key === 'dailySummary' || key === 'dailySummaryTime') {
       await NotificationService.syncAllAlarms();
+      await NotificationService.scheduleDailySummary();
     }
   };
 
   const handleSnoozeDurationClick = () => {
     setSnoozeModalVisible(true);
+  };
+
+  const formatTime = (timeStr) => {
+    if (!timeStr || timeStr === 'Off') return '';
+    const [h, m] = timeStr.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const hr = h % 12 || 12;
+    return `${hr.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} ${ampm}`;
+  };
+
+  const handleTimeChange = (event, selectedDate) => {
+    if (Platform.OS === 'android') setShowTimePicker(false);
+    if (selectedDate) {
+      const hours = selectedDate.getHours().toString().padStart(2, '0');
+      const minutes = selectedDate.getMinutes().toString().padStart(2, '0');
+      updateSetting('dailySummaryTime', `${hours}:${minutes}`);
+    }
   };
 
   const renderSectionHeader = (title) => (
@@ -117,7 +138,18 @@ const SettingsScreen = ({ navigation }) => {
 
         {renderSectionHeader('NOTIFICATIONS')}
         <View style={styles.sectionCard}>
-          {renderChevronItem(<DailySummaryIcon width={20} height={20} color="#6B7280" />, 'Daily Summary', null, () => {})}
+          {renderToggleItem(<DailySummaryIcon width={20} height={20} color="#6B7280" />, 'Daily Summary', 'dailySummary')}
+          {settings.dailySummary && (
+            <>
+              <View style={styles.divider} />
+              {renderChevronItem(
+                <View style={{ width: 20, height: 20 }} />, 
+                'Summary Time', 
+                formatTime(settings.dailySummaryTime), 
+                () => setShowTimePicker(true)
+              )}
+            </>
+          )}
           <View style={styles.divider} />
           {renderToggleItem(<DoseAlertsIcon width={20} height={20} color="#6B7280" />, 'Dose Alerts', 'doseAlerts')}
           <View style={styles.divider} />
@@ -158,6 +190,24 @@ const SettingsScreen = ({ navigation }) => {
           { text: 'Cancel', style: 'cancel' }
         ]}
       />
+
+      {showTimePicker && (
+        <DateTimePicker
+          value={
+            settings.dailySummaryTime && settings.dailySummaryTime !== 'Off'
+              ? (() => {
+                  const d = new Date();
+                  const [h, m] = settings.dailySummaryTime.split(':').map(Number);
+                  d.setHours(h, m, 0, 0);
+                  return d;
+                })()
+              : new Date()
+          }
+          mode="time"
+          display="spinner"
+          onChange={handleTimeChange}
+        />
+      )}
     </SafeAreaView>
   );
 };

@@ -154,6 +154,7 @@ export const StorageService = {
       snoozeDuration: 15,
       pillImageDisplay: true,
       dailySummary: true,
+      dailySummaryTime: '20:00',
       doseAlerts: true,
       soundVibration: true,
       biometricLock: false,

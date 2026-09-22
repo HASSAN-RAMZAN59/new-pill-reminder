@@ -82,6 +82,7 @@ const HomeScreen = () => {
     }
     
     loadSchedules();
+    NotificationService.scheduleDailySummary();
   };
 
   const renderCard = (item) => {

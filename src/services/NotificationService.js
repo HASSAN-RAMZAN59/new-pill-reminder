@@ -141,6 +141,56 @@ class NotificationService {
       trigger,
     );
   }
+  async scheduleDailySummary() {
+    const settings = StorageService.getSettings();
+    
+    // First, cancel any existing daily summary
+    await notifee.cancelNotification('daily-summary');
+
+    if (!settings.dailySummary || !settings.dailySummaryTime || settings.dailySummaryTime === 'Off') {
+      return;
+    }
+
+    // Calculate adherence for today
+    const dateString = new Date().toISOString().split('T')[0];
+    const daily = StorageService.getDailySchedules(dateString);
+    if (daily.length === 0) return; // No meds today
+
+    const taken = daily.filter(i => i.status === 'Taken').length;
+    const total = daily.length;
+
+    if (!this.channelId) await this.init();
+
+    // Parse the configured time
+    const [hours, minutes] = settings.dailySummaryTime.split(':').map(Number);
+    
+    let triggerDate = new Date();
+    triggerDate.setHours(hours, minutes, 0, 0);
+
+    // If time has passed today, schedule for tomorrow
+    if (triggerDate.getTime() <= Date.now()) {
+      triggerDate.setDate(triggerDate.getDate() + 1);
+    }
+
+    const trigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: triggerDate.getTime(),
+      repeatFrequency: RepeatFrequency.DAILY,
+    };
+
+    await notifee.createTriggerNotification(
+      {
+        id: 'daily-summary',
+        title: '📊 Daily Summary',
+        body: `You've taken ${taken}/${total} medications today. ${taken === total ? 'Great job!' : 'Keep it up!'}`,
+        android: {
+          channelId: this.channelId,
+          importance: AndroidImportance.DEFAULT,
+        },
+      },
+      trigger,
+    );
+  }
 }
 
 export default new NotificationService();
