@@ -128,7 +128,7 @@ const AddMedicineScreen = ({ navigation }) => {
               </TouchableOpacity>
               {reminders.length > 1 && (
                 <TouchableOpacity onPress={() => removeReminderTime(index)}>
-                  <Icon name="x-circle" size={24} color="#EF4444" />
+                  <Icon name="x-circle" size={24} color="#BA1A1A" />
                 </TouchableOpacity>
               )}
               {showPickerForIndex === index && (
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   saveBtn: {
-    backgroundColor: '#059669',
+    backgroundColor: '#006F66',
     paddingVertical: 16,
     borderRadius: 30,
     alignItems: 'center',

@@ -143,7 +143,7 @@ const TrendsScreen = () => {
         <View style={styles.statsRow}>
           <View style={styles.statCard}>
             <View style={styles.statIconWrapperGreen}>
-              <MaterialIcon name="local-fire-department" size={20} color="#059669" />
+              <MaterialIcon name="local-fire-department" size={20} color="#006F66" />
             </View>
             <Text style={styles.statValue}>{analytics.bestStreak}</Text>
             <Text style={styles.statLabel}>Best Streak (Days)</Text>
@@ -151,7 +151,7 @@ const TrendsScreen = () => {
           
           <View style={styles.statCard}>
             <View style={styles.statIconWrapperRed}>
-              <MaterialIcon name="warning" size={20} color="#DC2626" />
+              <MaterialIcon name="warning" size={20} color="#BA1A1A" />
             </View>
             <Text style={[styles.statValue, { fontSize: 18 }]} numberOfLines={1}>{analytics.missedMostOften}</Text>
             <Text style={styles.statLabel}>Missed Most</Text>
@@ -171,7 +171,7 @@ const TrendsScreen = () => {
                   <Text style={styles.breakdownPercent}>{item.percent}%</Text>
                 </View>
                 <View style={styles.progressBarBg}>
-                  <View style={[styles.progressBarFill, { width: `${item.percent}%`, backgroundColor: item.percent < 50 ? '#DC2626' : (item.percent < 80 ? '#F59E0B' : '#059669') }]} />
+                  <View style={[styles.progressBarFill, { width: `${item.percent}%`, backgroundColor: item.percent < 50 ? '#BA1A1A' : (item.percent < 80 ? '#F59E0B' : '#006F66') }]} />
                 </View>
               </View>
             ))}
@@ -199,8 +199,8 @@ const styles = StyleSheet.create({
   heroSub: { color: '#BAE6FD', fontSize: 13, marginTop: 5 },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 25 },
   statCard: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginHorizontal: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2, alignItems: 'center' },
-  statIconWrapperGreen: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#D1FAE5', justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
-  statIconWrapperRed: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#FEE2E2', justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
+  statIconWrapperGreen: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#E6F0EF', justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
+  statIconWrapperRed: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#FCE8E8', justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
   statValue: { fontSize: 22, fontWeight: 'bold', color: '#111827', marginBottom: 2 },
   statLabel: { fontSize: 12, color: '#6B7280', fontWeight: '500', textAlign: 'center' },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 15 },

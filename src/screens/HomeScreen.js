@@ -98,7 +98,7 @@ const HomeScreen = () => {
             </View>
             <Text style={styles.medSub}>{item.strength}{item.unit} • {item.expectedTime || 'PRN'}</Text>
           </View>
-          {isTaken && <MaterialIcon name="check-circle" size={24} color="#006A61" />}
+          {isTaken && <MaterialIcon name="check-circle" size={24} color="#006F66" />}
         </View>
 
         {(isUpcoming || isMissed) && (
@@ -156,7 +156,7 @@ const HomeScreen = () => {
             <Text style={styles.todayDate}>{selectedDateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</Text>
           </View>
           <View style={styles.badgeTaken}>
-            <MaterialIcon name="check-circle" size={12} color="#059669" />
+            <MaterialIcon name="check-circle" size={12} color="#006F66" />
             <Text style={styles.badgeTakenText}> {adherence.taken}/{adherence.total} Taken</Text>
           </View>
         </View>
@@ -202,8 +202,8 @@ const styles = StyleSheet.create({
   dateHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   todayTitle: { fontSize: 20, fontWeight: '700', color: '#111827' },
   todayDate: { fontSize: 14, color: '#6B7280', marginTop: 2 },
-  badgeTaken: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#D1FAE5', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20 },
-  badgeTakenText: { color: '#059669', fontSize: 12, fontWeight: '600' },
+  badgeTaken: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E6F0EF', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20 },
+  badgeTakenText: { color: '#006F66', fontSize: 12, fontWeight: '600' },
   dateSelector: { flexDirection: 'row', marginBottom: 30 },
   dateBox: { width: 60, height: 70, backgroundColor: '#FFFFFF', borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginRight: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
   dateBoxActive: { backgroundColor: '#0285FF' },
@@ -214,11 +214,11 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 15, fontWeight: '600', color: '#374151', marginBottom: 15, marginTop: 10 },
   cardNormal: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
   cardActive: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 15, borderWidth: 1.5, borderColor: '#0285FF', shadowColor: '#0285FF', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 4 },
-  cardWarning: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 15, borderWidth: 1, borderColor: '#FECACA' },
+  cardWarning: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 15, borderWidth: 1, borderColor: '#FCE8E8' },
   cardHeader: { flexDirection: 'row', alignItems: 'center' },
   iconWrapperBlue: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#EBF5FF', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
   iconWrapperSolidBlue: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#0285FF', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
-  iconWrapperSolidRed: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#FEE2E2', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
+  iconWrapperSolidRed: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#FCE8E8', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
   cardTextContent: { flex: 1 },
   cardTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 10 },
   titleWithTag: { flexDirection: 'row', alignItems: 'center', flexShrink: 1 },
@@ -228,10 +228,10 @@ const styles = StyleSheet.create({
   strikethroughLine: { position: 'absolute', height: 2, backgroundColor: '#6B7280', width: '100%', top: '50%', marginTop: -1 },
   medSub: { fontSize: 13, color: '#6B7280', marginTop: 4 },
   tagTaken: { backgroundColor: '#E6F0EF', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, marginLeft: 8 },
-  tagTakenText: { color: '#006A61', fontSize: 10, fontWeight: '600' },
+  tagTakenText: { color: '#006F66', fontSize: 10, fontWeight: '600' },
   tagUpcoming: { backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, marginLeft: 8 },
   tagUpcomingText: { color: '#4B5563', fontSize: 10, fontWeight: '600' },
-  textMissed: { color: '#DC2626', fontSize: 10, fontWeight: '600', textAlign: 'right' },
+  textMissed: { color: '#BA1A1A', fontSize: 10, fontWeight: '600', textAlign: 'right' },
   cardActions: { flexDirection: 'row', marginTop: 16, justifyContent: 'space-between' },
   btnSecondary: { flex: 1, paddingVertical: 12, borderRadius: 10, borderWidth: 1, borderColor: '#E5E7EB', alignItems: 'center', marginRight: 10 },
   btnSecondaryText: { color: '#4B5563', fontSize: 14, fontWeight: '600' },

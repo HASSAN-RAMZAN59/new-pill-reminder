@@ -35,7 +35,7 @@ const CabinetScreen = ({ navigation }) => {
       <View style={isLowStock ? styles.cardHighlight : styles.cardNormal}>
         <View style={styles.cardHeader}>
           <View style={isLowStock ? styles.iconWrapperLightRed : styles.iconWrapperLightBlue}>
-            <Icon name={item.type === 'Liquid' ? 'droplet' : 'link-2'} size={20} color={isLowStock ? "#DC2626" : "#0285FF"} />
+            <Icon name={item.type === 'Liquid' ? 'droplet' : 'link-2'} size={20} color={isLowStock ? "#BA1A1A" : "#0285FF"} />
           </View>
           <View style={styles.cardTextContent}>
             <View style={styles.cardTitleRow}>
@@ -49,7 +49,7 @@ const CabinetScreen = ({ navigation }) => {
             {item.frequency !== 'As Needed' ? (
               <View style={styles.progressRow}>
                 <View style={styles.progressBarBg}>
-                  <View style={[styles.progressBarFill, { width: `${Math.min((item.totalQuantity / 30) * 100, 100)}%`, backgroundColor: isLowStock ? '#DC2626' : '#059669' }]} />
+                  <View style={[styles.progressBarFill, { width: `${Math.min((item.totalQuantity / 30) * 100, 100)}%`, backgroundColor: isLowStock ? '#BA1A1A' : '#006F66' }]} />
                 </View>
                 <Text style={isLowStock ? styles.progressTextRed : styles.progressText}>
                   {item.totalQuantity} {item.unit} left
@@ -139,10 +139,10 @@ const styles = StyleSheet.create({
   filterBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 10, paddingVertical: 10, marginHorizontal: 5 },
   filterBtnText: { marginLeft: 8, fontSize: 13, fontWeight: '600', color: '#4B5563' },
   cardNormal: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
-  cardHighlight: { backgroundColor: '#FFFDFD', borderRadius: 16, padding: 16, marginBottom: 15, borderWidth: 1, borderColor: '#FEE2E2', shadowColor: '#EF4444', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
+  cardHighlight: { backgroundColor: '#FFFDFD', borderRadius: 16, padding: 16, marginBottom: 15, borderWidth: 1, borderColor: '#FCE8E8', shadowColor: '#BA1A1A', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
   cardHeader: { flexDirection: 'row' },
   iconWrapperLightBlue: { width: 44, height: 44, borderRadius: 10, backgroundColor: '#E0F2FE', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
-  iconWrapperLightRed: { width: 44, height: 44, borderRadius: 10, backgroundColor: '#FEE2E2', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
+  iconWrapperLightRed: { width: 44, height: 44, borderRadius: 10, backgroundColor: '#FCE8E8', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
   cardTextContent: { flex: 1 },
   cardTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   medTitle: { fontSize: 17, fontWeight: '700', color: '#111827' },
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   progressBarBg: { flex: 1, height: 6, backgroundColor: '#E5E7EB', borderRadius: 3, marginRight: 12 },
   progressBarFill: { height: 6, borderRadius: 3 },
   progressText: { fontSize: 11, color: '#4B5563' },
-  progressTextRed: { fontSize: 11, color: '#DC2626', fontWeight: '500' },
+  progressTextRed: { fontSize: 11, color: '#BA1A1A', fontWeight: '500' },
   textBtn: { marginTop: 12, alignSelf: 'flex-start' },
   textBtnText: { color: '#0285FF', fontSize: 13, fontWeight: '600' },
   badgeGrey: { backgroundColor: '#E5E7EB', alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4, marginTop: 4 },
