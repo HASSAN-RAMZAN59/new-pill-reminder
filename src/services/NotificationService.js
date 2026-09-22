@@ -88,6 +88,14 @@ class NotificationService {
     const settings = StorageService.getSettings();
     await notifee.cancelAllNotifications();
     
+    // Get all current trigger notifications
+    const triggerIds = await notifee.getTriggerNotificationIds();
+    // Cancel all triggers except daily summary
+    const medTriggerIds = triggerIds.filter(id => !id.startsWith('daily-summary'));
+    if (medTriggerIds.length > 0) {
+      await notifee.cancelTriggerNotifications(medTriggerIds);
+    }
+    
     if (settings.doseAlerts) {
       const medicines = StorageService.getMedicines();
       for (const med of medicines) {
