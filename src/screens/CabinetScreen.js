@@ -13,6 +13,11 @@ const CabinetScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [settings, setSettings] = useState({ refillReminders: true });
   
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [sortOrder, setSortOrder] = useState('Default');
+  const [categoryModalVisible, setCategoryModalVisible] = useState(false);
+  const [sortModalVisible, setSortModalVisible] = useState(false);
+
   const [optionsModalVisible, setOptionsModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedMedicine, setSelectedMedicine] = useState(null);
@@ -29,9 +34,19 @@ const CabinetScreen = ({ navigation }) => {
     }, [loadMedicines])
   );
 
-  const filteredMedicines = medicines.filter(m => 
+  let processedMedicines = [...medicines].filter(m => 
     m.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (selectedCategory !== 'All') {
+    processedMedicines = processedMedicines.filter(m => m.type === selectedCategory);
+  }
+
+  if (sortOrder === 'A-Z') {
+    processedMedicines.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortOrder === 'Z-A') {
+    processedMedicines.sort((a, b) => b.name.localeCompare(a.name));
+  }
 
   const handleOptions = (item) => {
     setSelectedMedicine(item);
@@ -135,18 +150,28 @@ const CabinetScreen = ({ navigation }) => {
 
 
         <View style={styles.filterRow}>
-          <TouchableOpacity style={styles.filterBtn}>
-            <MaterialIcon name="filter-list" size={18} color="#4B5563" />
-            <Text style={styles.filterBtnText}>Category</Text>
+          <TouchableOpacity 
+            style={[styles.filterBtn, selectedCategory !== 'All' && styles.filterBtnActive]} 
+            onPress={() => setCategoryModalVisible(true)}
+          >
+            <MaterialIcon name="filter-list" size={18} color={selectedCategory !== 'All' ? '#0285FF' : '#4B5563'} />
+            <Text style={[styles.filterBtnText, selectedCategory !== 'All' && {color: '#0285FF'}]}>
+              {selectedCategory === 'All' ? 'Category' : selectedCategory}
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.filterBtn}>
-            <MaterialIcon name="sort" size={18} color="#4B5563" />
-            <Text style={styles.filterBtnText}>A-Z</Text>
+          <TouchableOpacity 
+            style={[styles.filterBtn, sortOrder !== 'Default' && styles.filterBtnActive]} 
+            onPress={() => setSortModalVisible(true)}
+          >
+            <MaterialIcon name="sort" size={18} color={sortOrder !== 'Default' ? '#0285FF' : '#4B5563'} />
+            <Text style={[styles.filterBtnText, sortOrder !== 'Default' && {color: '#0285FF'}]}>
+              {sortOrder === 'Default' ? 'Sort' : sortOrder}
+            </Text>
           </TouchableOpacity>
         </View>
 
         <FlatList
-          data={filteredMedicines}
+          data={processedMedicines}
           keyExtractor={(item) => item.id}
           renderItem={renderMedicineCard}
           showsVerticalScrollIndicator={false}
@@ -186,6 +211,31 @@ const CabinetScreen = ({ navigation }) => {
           { text: 'Delete', style: 'destructive', onPress: confirmDelete }
         ]}
       />
+
+      <CustomModal
+        visible={categoryModalVisible}
+        onClose={() => setCategoryModalVisible(false)}
+        title="Filter by Category"
+        options={[
+          { text: 'All Categories', onPress: () => setSelectedCategory('All') },
+          { text: 'Pill', onPress: () => setSelectedCategory('Pill') },
+          { text: 'Liquid', onPress: () => setSelectedCategory('Liquid') },
+          { text: 'Injection', onPress: () => setSelectedCategory('Injection') },
+          { text: 'Cancel', style: 'cancel' }
+        ]}
+      />
+
+      <CustomModal
+        visible={sortModalVisible}
+        onClose={() => setSortModalVisible(false)}
+        title="Sort Options"
+        options={[
+          { text: 'Default (Date Added)', onPress: () => setSortOrder('Default') },
+          { text: 'Name (A to Z)', onPress: () => setSortOrder('A-Z') },
+          { text: 'Name (Z to A)', onPress: () => setSortOrder('Z-A') },
+          { text: 'Cancel', style: 'cancel' }
+        ]}
+      />
     </SafeAreaView>
   );
 };
@@ -199,6 +249,7 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, fontSize: 15, color: '#111827' },
   filterRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   filterBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 10, paddingVertical: 10, marginHorizontal: 5 },
+  filterBtnActive: { borderColor: '#0285FF', backgroundColor: '#EAF4FF' },
   filterBtnText: { marginLeft: 8, fontSize: 13, fontWeight: '600', color: '#4B5563' },
   cardNormal: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
   cardHighlight: { backgroundColor: '#FFFDFD', borderRadius: 16, padding: 16, marginBottom: 15, borderWidth: 1, borderColor: '#FCE8E8', shadowColor: '#BA1A1A', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
