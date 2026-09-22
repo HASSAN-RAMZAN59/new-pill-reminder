@@ -26,6 +26,37 @@ const CabinetScreen = ({ navigation }) => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedMedicine, setSelectedMedicine] = useState(null);
 
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifModal, setShowNotifModal] = useState(false);
+  const [hasViewedNotifs, setHasViewedNotifs] = useState(false);
+
+  const loadNotifications = useCallback(() => {
+    const alerts = [];
+    const todayStr = new Date().toISOString().split('T')[0];
+    
+    const daily = StorageService.getDailySchedules(todayStr);
+    daily.forEach(item => {
+      if (item.status === 'Missed') {
+        alerts.push({
+          title: 'Missed Dose',
+          message: `You missed ${item.name} at ${item.expectedTime}.`
+        });
+      }
+    });
+
+    const meds = StorageService.getMedicines();
+    meds.forEach(med => {
+      if (med.totalQuantity <= 5) {
+        alerts.push({
+          title: 'Low Inventory',
+          message: `${med.name} is running low (${med.totalQuantity} remaining).`
+        });
+      }
+    });
+
+    setNotifications(alerts);
+  }, []);
+
   const loadMedicines = useCallback(() => {
     const meds = StorageService.getMedicines();
     setMedicines(meds);
@@ -35,7 +66,8 @@ const CabinetScreen = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       loadMedicines();
-    }, [loadMedicines])
+      loadNotifications();
+    }, [loadMedicines, loadNotifications])
   );
 
   let processedMedicines = [...medicines].filter(m => 
@@ -136,8 +168,16 @@ const CabinetScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.brandTitle}>MedTrack</Text>
-        <TouchableOpacity>
-          <Icon name="bell" size={24} color="#0285FF" />
+        <TouchableOpacity onPress={() => {
+          setShowNotifModal(true);
+          setHasViewedNotifs(true);
+        }}>
+          <View>
+            <Icon name="bell" size={24} color="#0285FF" />
+            {notifications.length > 0 && !hasViewedNotifs && (
+              <View style={styles.notifBadge} />
+            )}
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -242,6 +282,14 @@ const CabinetScreen = ({ navigation }) => {
           { text: 'Cancel', style: 'cancel' }
         ]}
       />
+
+      <CustomModal
+        visible={showNotifModal}
+        onClose={() => setShowNotifModal(false)}
+        title="Notifications"
+        message={notifications.length === 0 ? "You're all caught up! No missed doses or low stock." : notifications.map(n => `• ${n.title}: ${n.message}`).join('\n\n')}
+        options={[{ text: 'Close', style: 'cancel' }]}
+      />
     </SafeAreaView>
   );
 };
@@ -250,6 +298,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F9FA' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 10, paddingBottom: 15 },
   brandTitle: { fontSize: 22, fontWeight: 'bold', color: '#0285FF' },
+  notifBadge: { position: 'absolute', top: -2, right: -2, width: 10, height: 10, borderRadius: 5, backgroundColor: '#BA1A1A', borderWidth: 2, borderColor: '#F8F9FA' },
   searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, paddingHorizontal: 15, height: 48, borderWidth: 1, borderColor: '#E5E7EB', marginBottom: 15 },
   searchIcon: { marginRight: 10 },
   searchInput: { flex: 1, fontSize: 15, color: '#111827' },

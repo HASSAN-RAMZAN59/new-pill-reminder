@@ -26,6 +26,7 @@ const HomeScreen = () => {
   const [settings, setSettings] = useState({ pillImageDisplay: true });
   const [notifications, setNotifications] = useState([]);
   const [showNotifModal, setShowNotifModal] = useState(false);
+  const [hasViewedNotifs, setHasViewedNotifs] = useState(false);
 
   const selectedDateString = selectedDateObj.toISOString().split('T')[0];
 
@@ -189,10 +190,13 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.brandTitle}>MedTrack</Text>
-        <TouchableOpacity onPress={() => setShowNotifModal(true)}>
+        <TouchableOpacity onPress={() => {
+          setShowNotifModal(true);
+          setHasViewedNotifs(true);
+        }}>
           <View>
             <Icon name="bell" size={24} color="#0285FF" />
-            {notifications.length > 0 && (
+            {notifications.length > 0 && !hasViewedNotifs && (
               <View style={styles.notifBadge} />
             )}
           </View>
