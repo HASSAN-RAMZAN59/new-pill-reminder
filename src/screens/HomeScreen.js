@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { StorageService } from '../services/StorageService';
 import NotificationService from '../services/NotificationService';
+import CustomModal from '../components/CustomModal';
 
 // Helper to get array of dates around today
 const getDatesAround = (centerDate, numDays = 3) => {
@@ -23,8 +24,37 @@ const HomeScreen = () => {
   const [schedules, setSchedules] = useState({ morning: [], afternoon: [], evening: [] });
   const [adherence, setAdherence] = useState({ taken: 0, total: 0 });
   const [settings, setSettings] = useState({ pillImageDisplay: true });
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifModal, setShowNotifModal] = useState(false);
 
   const selectedDateString = selectedDateObj.toISOString().split('T')[0];
+
+  const loadNotifications = useCallback(() => {
+    const alerts = [];
+    const todayStr = new Date().toISOString().split('T')[0];
+    
+    const daily = StorageService.getDailySchedules(todayStr);
+    daily.forEach(item => {
+      if (item.status === 'Missed') {
+        alerts.push({
+          title: 'Missed Dose',
+          message: `You missed ${item.name} at ${item.expectedTime}.`
+        });
+      }
+    });
+
+    const medicines = StorageService.getMedicines();
+    medicines.forEach(med => {
+      if (med.totalQuantity <= 5) {
+        alerts.push({
+          title: 'Low Inventory',
+          message: `${med.name} is running low (${med.totalQuantity} remaining).`
+        });
+      }
+    });
+
+    setNotifications(alerts);
+  }, []);
 
   const loadSchedules = useCallback(() => {
     setSettings(StorageService.getSettings());
@@ -57,7 +87,8 @@ const HomeScreen = () => {
   useFocusEffect(
     useCallback(() => {
       loadSchedules();
-    }, [loadSchedules])
+      loadNotifications();
+    }, [loadSchedules, loadNotifications])
   );
 
   const datesList = getDatesAround(new Date(), 3);
@@ -158,8 +189,13 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.brandTitle}>MedTrack</Text>
-        <TouchableOpacity>
-          <Icon name="bell" size={24} color="#0285FF" />
+        <TouchableOpacity onPress={() => setShowNotifModal(true)}>
+          <View>
+            <Icon name="bell" size={24} color="#0285FF" />
+            {notifications.length > 0 && (
+              <View style={styles.notifBadge} />
+            )}
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -208,12 +244,33 @@ const HomeScreen = () => {
         {renderSection('Evening', schedules.evening)}
 
       </ScrollView>
+
+      <CustomModal
+        visible={showNotifModal}
+        onClose={() => setShowNotifModal(false)}
+        title="Notifications"
+        message={notifications.length > 0 
+          ? notifications.map(n => `• ${n.title}:\n  ${n.message}`).join('\n\n')
+          : "You are all caught up! No new notifications."}
+        options={[{ text: 'Close', onPress: () => setShowNotifModal(false) }]}
+      />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F9FA' },
+  notifBadge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#BA1A1A',
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
+  },
   scrollContent: { paddingHorizontal: 20, paddingBottom: 40 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 10, paddingBottom: 20 },
   brandTitle: { fontSize: 22, fontWeight: 'bold', color: '#0285FF' },

@@ -144,7 +144,7 @@ const SettingsScreen = ({ navigation }) => {
             <>
               <View style={styles.divider} />
               {renderChevronItem(
-                <View style={{ width: 20, height: 20 }} />,
+                <DailySummaryIcon width={20} height={20} color="#6B7280" />,
                 'Summary Time',
                 formatTime(settings.dailySummaryTime),
                 () => setShowTimePicker(true)
