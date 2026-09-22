@@ -16,7 +16,9 @@ import LiquidSvg from '../assets/add med/Container (3).svg';
 import InjectionSvg from '../assets/add med/Container (4).svg';
 import CameraSvg from '../assets/add med/Container.svg';
 
+const TYPES = ['Pill', 'Liquid', 'Injection'];
 const FREQUENCIES = ['Daily', 'Weekly'];
+const UNITS = ['mg', 'ml', 'mcg', 'g', 'pill(s)', 'drop(s)'];
 
 const AddMedicineScreen = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -30,6 +32,7 @@ const AddMedicineScreen = ({ navigation }) => {
   const [imageUri, setImageUri] = useState(null);
 
   const [showPickerForIndex, setShowPickerForIndex] = useState(null);
+  const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -187,10 +190,10 @@ const AddMedicineScreen = ({ navigation }) => {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.label}>Unit</Text>
-              <View style={styles.inputDropdown}>
+              <TouchableOpacity onPress={() => setUnitModalVisible(true)} style={styles.inputDropdown}>
                 <Text style={styles.inputText}>{unit}</Text>
                 <Icon name="chevron-down" size={20} color="#4B5563" />
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -288,6 +291,18 @@ const AddMedicineScreen = ({ navigation }) => {
         title="Required Field"
         message={errorMessage}
         options={[{ text: 'OK', onPress: () => setErrorModalVisible(false) }]}
+      />
+
+      <CustomModal
+        visible={unitModalVisible}
+        onClose={() => setUnitModalVisible(false)}
+        title="Select Unit"
+        message="Choose a measurement unit:"
+        options={[...UNITS.map(u => ({
+          text: u,
+          style: 'outline',
+          onPress: () => { setUnit(u); setUnitModalVisible(false); }
+        })), { text: 'Cancel', style: 'cancel' }]}
       />
     </SafeAreaView>
   );
@@ -495,7 +510,7 @@ const styles = StyleSheet.create({
   cancelBtnText: { color: '#111827', fontWeight: 'bold', fontSize: 16 },
   saveBtn: {
     flex: 1,
-    backgroundColor: '#006F66',
+    backgroundColor: '#0285FF',
     paddingVertical: 15,
     borderRadius: 30,
     alignItems: 'center',
