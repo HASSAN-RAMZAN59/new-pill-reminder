@@ -22,10 +22,12 @@ const HomeScreen = () => {
   const [selectedDateObj, setSelectedDateObj] = useState(new Date());
   const [schedules, setSchedules] = useState({ morning: [], afternoon: [], evening: [] });
   const [adherence, setAdherence] = useState({ taken: 0, total: 0 });
+  const [settings, setSettings] = useState({ pillImageDisplay: true });
 
   const selectedDateString = selectedDateObj.toISOString().split('T')[0];
 
   const loadSchedules = useCallback(() => {
+    setSettings(StorageService.getSettings());
     const daily = StorageService.getDailySchedules(selectedDateString);
     
     const morning = [];
@@ -91,7 +93,13 @@ const HomeScreen = () => {
       <View key={`${item.id}-${item.expectedTime}`} style={isMissed ? styles.cardWarning : (isUpcoming ? styles.cardActive : styles.cardNormal)}>
         <View style={styles.cardHeader}>
           <View style={isMissed ? styles.iconWrapperSolidRed : (isTaken ? styles.iconWrapperBlue : styles.iconWrapperSolidBlue)}>
-            <Icon name={item.type === 'Liquid' ? 'droplet' : (item.type === 'Injection' ? 'activity' : 'plus-square')} size={20} color={isTaken ? "#0285FF" : "#FFF"} />
+            {settings.pillImageDisplay ? (
+              <Icon name={item.type === 'Liquid' ? 'droplet' : (item.type === 'Injection' ? 'activity' : 'plus-square')} size={20} color={isTaken ? "#0285FF" : "#FFF"} />
+            ) : (
+              <Text style={{ fontSize: 16, fontWeight: 'bold', color: isTaken ? "#0285FF" : "#FFF" }}>
+                {item.name ? item.name.charAt(0).toUpperCase() : 'M'}
+              </Text>
+            )}
           </View>
           <View style={styles.cardTextContent}>
             <View style={styles.cardTitleRow}>

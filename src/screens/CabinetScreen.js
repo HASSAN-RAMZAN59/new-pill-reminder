@@ -54,7 +54,13 @@ const CabinetScreen = ({ navigation }) => {
       <View style={isLowStock ? styles.cardHighlight : styles.cardNormal}>
         <View style={styles.cardHeader}>
           <View style={isLowStock ? styles.iconWrapperLightRed : styles.iconWrapperLightBlue}>
-            <Icon name={item.type === 'Liquid' ? 'droplet' : 'link-2'} size={20} color={isLowStock ? "#BA1A1A" : "#0285FF"} />
+            {settings.pillImageDisplay ? (
+              <Icon name={item.type === 'Liquid' ? 'droplet' : 'link-2'} size={20} color={isLowStock ? "#BA1A1A" : "#0285FF"} />
+            ) : (
+              <Text style={{ fontSize: 16, fontWeight: 'bold', color: isLowStock ? "#BA1A1A" : "#0285FF" }}>
+                {item.name ? item.name.charAt(0).toUpperCase() : 'M'}
+              </Text>
+            )}
           </View>
           <View style={styles.cardTextContent}>
             <View style={styles.cardTitleRow}>
