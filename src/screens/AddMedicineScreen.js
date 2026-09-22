@@ -100,6 +100,39 @@ const AddMedicineScreen = ({ navigation }) => {
     navigation.navigate('Home', { screen: 'Cabinet' });
   };
 
+  const [currentStep, setCurrentStep] = useState(1);
+  const [scheduleY, setScheduleY] = useState(300);
+  const [reviewY, setReviewY] = useState(600);
+
+  const handleScroll = (event) => {
+    const y = event.nativeEvent.contentOffset.y;
+    const contentHeight = event.nativeEvent.contentSize.height;
+    const layoutHeight = event.nativeEvent.layoutMeasurement.height;
+
+    if (y + layoutHeight >= contentHeight - 50) {
+      // Reached bottom
+      setCurrentStep(3);
+    } else if (y >= reviewY - 200) {
+      setCurrentStep(3);
+    } else if (y >= scheduleY - 100) {
+      setCurrentStep(2);
+    } else {
+      setCurrentStep(1);
+    }
+  };
+
+  const renderStepBox = (stepNum, label) => {
+    const isActive = currentStep === stepNum;
+    return (
+      <View style={styles.stepperItem}>
+        <View style={isActive ? styles.stepActive : styles.stepInactive}>
+          <Text style={isActive ? styles.stepNumberActive : styles.stepNumberInactive}>{stepNum}</Text>
+        </View>
+        <Text style={isActive ? styles.stepLabelActive : styles.stepLabelInactive}>{label}</Text>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -113,34 +146,26 @@ const AddMedicineScreen = ({ navigation }) => {
       </View>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          
-          {/* Static Stepper */}
+        
+        {/* Sticky Stepper */}
+        <View style={{ backgroundColor: '#FFF', zIndex: 10 }}>
           <View style={styles.stepperContainer}>
-            <View style={styles.stepperItem}>
-              <View style={styles.stepActive}>
-                <Text style={styles.stepNumberActive}>1</Text>
-              </View>
-              <Text style={styles.stepLabelActive}>Basics</Text>
-            </View>
+            {renderStepBox(1, 'Basics')}
             <View style={styles.stepLine} />
-            <View style={styles.stepperItem}>
-              <View style={styles.stepInactive}>
-                <Text style={styles.stepNumberInactive}>2</Text>
-              </View>
-              <Text style={styles.stepLabelInactive}>Schedule</Text>
-            </View>
+            {renderStepBox(2, 'Schedule')}
             <View style={styles.stepLine} />
-            <View style={styles.stepperItem}>
-              <View style={styles.stepInactive}>
-                <Text style={styles.stepNumberInactive}>3</Text>
-              </View>
-              <Text style={styles.stepLabelInactive}>Review</Text>
-            </View>
+            {renderStepBox(3, 'Review')}
           </View>
-
           <View style={styles.divider} />
+        </View>
 
+        <ScrollView 
+          style={styles.content} 
+          showsVerticalScrollIndicator={false}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+        >
+          
           {/* Section 1: Medicine Details */}
           <Text style={styles.sectionTitle}>Medicine Details</Text>
           <View style={styles.sectionDivider} />
@@ -200,7 +225,10 @@ const AddMedicineScreen = ({ navigation }) => {
           <View style={styles.spacer} />
 
           {/* Section 2: Schedule & Reminders */}
-          <Text style={styles.sectionTitle}>Schedule & Reminders</Text>
+          <Text 
+            style={styles.sectionTitle}
+            onLayout={(e) => setScheduleY(e.nativeEvent.layout.y)}
+          >Schedule & Reminders</Text>
           <View style={styles.sectionDivider} />
 
           <Text style={styles.label}>Frequency</Text>
@@ -256,7 +284,10 @@ const AddMedicineScreen = ({ navigation }) => {
           <View style={styles.spacerLarge} />
 
           {/* Section 3: Appearance (Optional) */}
-          <Text style={styles.sectionTitle}>Appearance (Optional)</Text>
+          <Text 
+            style={styles.sectionTitle}
+            onLayout={(e) => setReviewY(e.nativeEvent.layout.y)}
+          >Appearance (Optional)</Text>
           <View style={styles.sectionDivider} />
           
           <Text style={styles.appearanceSub}>Upload a photo of the pill or packaging to help identify it later.</Text>
