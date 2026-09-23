@@ -132,6 +132,12 @@ const CabinetScreen = ({ navigation }) => {
     }
   };
 
+  const getDaysLeft = (item) => {
+    const dosesPerDay = item.reminders && item.reminders.length > 0 ? item.reminders.length : 1;
+    const days = Math.floor(item.totalQuantity / dosesPerDay);
+    return `${days} day${days !== 1 ? 's' : ''} left`;
+  };
+
   const renderMedicineCard = ({ item }) => {
     // Basic logic for stock indicators
     const isLowStock = settings.refillReminders && item.totalQuantity <= 5;
@@ -165,7 +171,7 @@ const CabinetScreen = ({ navigation }) => {
                   <View style={[styles.progressBarFill, { width: `${Math.min((item.totalQuantity / 30) * 100, 100)}%`, backgroundColor: isLowStock ? '#BA1A1A' : '#006F66' }]} />
                 </View>
                 <Text style={isLowStock ? styles.progressTextRed : styles.progressText}>
-                  {item.totalQuantity} {item.unit} left
+                  {getDaysLeft(item)}
                 </Text>
               </View>
             ) : (
