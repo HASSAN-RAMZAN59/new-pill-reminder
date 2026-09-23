@@ -17,7 +17,7 @@ const SplashScreen = ({ navigation }) => {
     }).start(({ finished }) => {
       if (finished) {
         if (StorageService.getHasOnboarded()) {
-          navigation.replace('Home', { screen: 'Cabinet' });
+          navigation.replace('Home');
         } else {
           navigation.replace('Onboarding');
         }

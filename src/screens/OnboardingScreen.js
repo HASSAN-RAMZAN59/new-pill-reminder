@@ -39,13 +39,13 @@ const OnboardingScreen = ({ navigation }) => {
       setCurrentStep(currentStep + 1);
     } else {
       StorageService.setHasOnboarded(true);
-      navigation.replace('Home', { screen: 'Cabinet' });
+      navigation.replace('Home');
     }
   };
 
   const handleSkip = () => {
     StorageService.setHasOnboarded(true);
-    navigation.replace('Home', { screen: 'Cabinet' });
+    navigation.replace('Home');
   };
 
   const currentData = onboardingData[currentStep];
