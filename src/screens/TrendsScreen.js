@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   toggleWrapper: { paddingHorizontal: 20, marginBottom: 20 },
   toggleContainer: { flexDirection: 'row', backgroundColor: '#F3F4F6', borderRadius: 12, padding: 4 },
   toggleBtn: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8 },
-  toggleBtnActive: { backgroundColor: '#EBF5FF', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 },
+  toggleBtnActive: { backgroundColor: '#E3EBF9', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 },
   toggleText: { fontSize: 14, fontWeight: '600', color: '#4B5563' },
   toggleTextActive: { color: '#0285FF' },
 
