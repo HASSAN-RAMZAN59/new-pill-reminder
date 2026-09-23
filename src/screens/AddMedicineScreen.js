@@ -222,6 +222,18 @@ const AddMedicineScreen = ({ navigation }) => {
             </View>
           </View>
 
+          <View style={{ marginTop: 20 }}>
+            <Text style={styles.label}>Total Quantity (Inventory)</Text>
+            <TextInput 
+              style={styles.input} 
+              placeholder="e.g., 30" 
+              placeholderTextColor="#9CA3AF"
+              keyboardType="numeric" 
+              value={totalQuantity} 
+              onChangeText={setTotalQuantity} 
+            />
+          </View>
+
           <View style={styles.spacer} />
 
           {/* Section 2: Schedule & Reminders */}
