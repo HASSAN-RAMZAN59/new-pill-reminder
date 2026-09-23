@@ -320,10 +320,10 @@ const styles = StyleSheet.create({
   tagUpcomingText: { color: '#4B5563', fontSize: 10, fontWeight: '600' },
   textMissed: { color: '#BA1A1A', fontSize: 10, fontWeight: '600', textAlign: 'right' },
   cardActions: { flexDirection: 'row', marginTop: 16, justifyContent: 'space-between' },
-  btnSecondary: { flex: 1, paddingVertical: 12, borderRadius: 10, borderWidth: 1, borderColor: '#E5E7EB', alignItems: 'center', marginRight: 10 },
+  btnSecondary: { flex: 1, paddingVertical: 8, borderRadius: 10, borderWidth: 1, borderColor: '#E5E7EB', alignItems: 'center', marginRight: 10 },
   btnSecondaryText: { color: '#4B5563', fontSize: 14, fontWeight: '600' },
-  btnPrimary: { flex: 1, backgroundColor: '#0285FF', paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
-  btnPrimaryFull: { width: '100%', backgroundColor: '#0285FF', paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
+  btnPrimary: { flex: 1, backgroundColor: '#0285FF', paddingVertical: 8, borderRadius: 10, alignItems: 'center' },
+  btnPrimaryFull: { width: '100%', backgroundColor: '#0285FF', paddingVertical: 8, borderRadius: 10, alignItems: 'center' },
   btnPrimaryText: { color: '#FFFFFF', fontSize: 14, fontWeight: '600' }
 });
 
