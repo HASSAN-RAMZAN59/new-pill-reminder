@@ -165,5 +165,13 @@ export const StorageService = {
   updateSettings: (updates) => {
     const current = StorageService.getSettings();
     storage.set(SETTINGS_KEY, JSON.stringify({ ...current, ...updates }));
+  },
+
+  getHasViewedNotifs: () => {
+    return storage.getBoolean('hasViewedNotifs') || false;
+  },
+
+  setHasViewedNotifs: (value) => {
+    storage.set('hasViewedNotifs', value);
   }
 };

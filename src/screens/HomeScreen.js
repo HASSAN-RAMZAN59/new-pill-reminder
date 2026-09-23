@@ -59,6 +59,7 @@ const HomeScreen = () => {
     });
 
     setNotifications(alerts);
+    setHasViewedNotifs(StorageService.getHasViewedNotifs());
   }, []);
 
   const loadSchedules = useCallback(() => {
@@ -199,6 +200,7 @@ const HomeScreen = () => {
         <TouchableOpacity onPress={() => {
           setShowNotifModal(true);
           setHasViewedNotifs(true);
+          StorageService.setHasViewedNotifs(true);
         }}>
           <View>
             <Icon name="bell" size={24} color="#0285FF" />

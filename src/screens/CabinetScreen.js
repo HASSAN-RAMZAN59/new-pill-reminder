@@ -55,6 +55,7 @@ const CabinetScreen = ({ navigation }) => {
     });
 
     setNotifications(alerts);
+    setHasViewedNotifs(StorageService.getHasViewedNotifs());
   }, []);
 
   const loadMedicines = useCallback(() => {
@@ -171,6 +172,7 @@ const CabinetScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => {
           setShowNotifModal(true);
           setHasViewedNotifs(true);
+          StorageService.setHasViewedNotifs(true);
         }}>
           <View>
             <Icon name="bell" size={24} color="#0285FF" />
