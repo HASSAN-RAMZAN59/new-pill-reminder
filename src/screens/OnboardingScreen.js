@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 import Illustration1Icon from '../assets/Illustration.svg';
 import HeroIcon from '../assets/Hero Graphic Area_margin.svg';
 import Illustration3Icon from '../assets/Illustration (1).svg';
+import { StorageService } from '../services/StorageService';
 
 const { width } = Dimensions.get('window');
 
@@ -37,13 +38,14 @@ const OnboardingScreen = ({ navigation }) => {
     if (currentStep < onboardingData.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Navigate to Home screen when onboarding is complete
-      navigation.replace('Home');
+      StorageService.setHasOnboarded(true);
+      navigation.replace('Home', { screen: 'Cabinet' });
     }
   };
 
   const handleSkip = () => {
-    navigation.replace('Home');
+    StorageService.setHasOnboarded(true);
+    navigation.replace('Home', { screen: 'Cabinet' });
   };
 
   const currentData = onboardingData[currentStep];

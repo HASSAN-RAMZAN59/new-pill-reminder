@@ -7,6 +7,13 @@ const LOGS_KEY = 'logs';
 const SETTINGS_KEY = 'settings';
 
 export const StorageService = {
+  getHasOnboarded: () => {
+    return storage.getBoolean('hasOnboarded') || false;
+  },
+  setHasOnboarded: (val) => {
+    storage.set('hasOnboarded', val);
+  },
+  
   getMedicines: () => {
     const json = storage.getString(MEDICINES_KEY);
     return json ? JSON.parse(json) : [];

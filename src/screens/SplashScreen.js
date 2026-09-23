@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
 import SplashIcon from '../assets/Frame 833 (1).svg';
+import { StorageService } from '../services/StorageService';
 
 const { width } = Dimensions.get('window');
 
@@ -12,10 +13,14 @@ const SplashScreen = ({ navigation }) => {
     Animated.timing(progressAnim, {
       toValue: 1,
       duration: 3000,
-      useNativeDriver: false, // width animation does not support native driver
+      useNativeDriver: false,
     }).start(({ finished }) => {
       if (finished) {
-        navigation.replace('Onboarding');
+        if (StorageService.getHasOnboarded()) {
+          navigation.replace('Home', { screen: 'Cabinet' });
+        } else {
+          navigation.replace('Onboarding');
+        }
       }
     });
   }, [navigation, progressAnim]);
