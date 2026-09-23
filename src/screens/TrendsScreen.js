@@ -48,7 +48,10 @@ const TrendsScreen = () => {
     adherencePercent: 0,
     bestStreak: 0,
     missedMostOften: 'None',
-    breakdown: []
+    missedMostOftenSub: '',
+    breakdown: [],
+    trendPercent: 0,
+    daysStatus: []
   });
 
   const [notifications, setNotifications] = useState([]);
@@ -79,80 +82,174 @@ const TrendsScreen = () => {
     const medicines = StorageService.getMedicines();
     
     const now = new Date();
-    const cutoffDate = new Date();
+    // Normalize now to midnight for day calculations
+    const todayStr = now.toISOString().split('T')[0];
+    const todayDate = new Date(todayStr);
+
+    const cutoffDate = new Date(todayDate);
+    let prevPeriodStart = new Date(todayDate);
+    let prevPeriodEnd = new Date(todayDate);
+
     if (viewMode === 'Weekly') {
-      cutoffDate.setDate(now.getDate() - 7);
+      cutoffDate.setDate(todayDate.getDate() - 6); // Last 7 days including today
+      prevPeriodStart.setDate(todayDate.getDate() - 13);
+      prevPeriodEnd.setDate(todayDate.getDate() - 7);
     } else {
-      cutoffDate.setMonth(now.getMonth() - 1);
+      cutoffDate.setDate(todayDate.getDate() - 29); // Last 30 days including today
+      prevPeriodStart.setDate(todayDate.getDate() - 59);
+      prevPeriodEnd.setDate(todayDate.getDate() - 30);
     }
 
     let totalDoses = 0;
     let takenDoses = 0;
+    let prevTotalDoses = 0;
+    let prevTakenDoses = 0;
+    
     let currentStreak = 0;
     let bestStreak = 0;
+    
     const sortedDates = Object.keys(logsObj).sort();
 
     const medMissCounts = {};
+    const medMissTimes = {};
     const breakdownMap = {};
 
     medicines.forEach(m => {
       breakdownMap[m.id] = { name: m.name, taken: 0, total: 0 };
       medMissCounts[m.id] = 0;
+      medMissTimes[m.id] = { morning: 0, afternoon: 0, evening: 0 };
     });
+
+    // Determine daily status for the last 7 days
+    const last7DaysMap = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(todayDate);
+      d.setDate(todayDate.getDate() - i);
+      const dStr = d.toISOString().split('T')[0];
+      last7DaysMap[dStr] = { total: 0, taken: 0, missed: 0 };
+    }
 
     sortedDates.forEach(dateStr => {
       const logDate = new Date(dateStr);
-      if (logDate >= cutoffDate) {
-        let dayPerfect = true;
-        let dayHasLogs = false;
+      
+      const inCurrentPeriod = logDate >= cutoffDate && logDate <= todayDate;
+      const inPrevPeriod = logDate >= prevPeriodStart && logDate <= prevPeriodEnd;
 
-        logsObj[dateStr].forEach(log => {
-          dayHasLogs = true;
+      let dayPerfect = true;
+      let dayHasLogs = false;
+
+      logsObj[dateStr].forEach(log => {
+        dayHasLogs = true;
+        
+        if (inCurrentPeriod) {
           totalDoses++;
-          
           if (breakdownMap[log.medicineId]) {
             breakdownMap[log.medicineId].total++;
           }
+        } else if (inPrevPeriod) {
+          prevTotalDoses++;
+        }
 
-          if (log.status === 'Taken') {
+        if (log.status === 'Taken') {
+          if (inCurrentPeriod) {
             takenDoses++;
             if (breakdownMap[log.medicineId]) breakdownMap[log.medicineId].taken++;
-          } else if (log.status === 'Missed') {
-            dayPerfect = false;
-            if (medMissCounts[log.medicineId] !== undefined) {
-              medMissCounts[log.medicineId]++;
-            }
-          } else {
-             dayPerfect = false;
+          } else if (inPrevPeriod) {
+            prevTakenDoses++;
           }
-        });
-
-        if (dayHasLogs && dayPerfect) {
-          currentStreak++;
-          if (currentStreak > bestStreak) bestStreak = currentStreak;
+          if (last7DaysMap[dateStr]) {
+            last7DaysMap[dateStr].total++;
+            last7DaysMap[dateStr].taken++;
+          }
+        } else if (log.status === 'Missed') {
+          dayPerfect = false;
+          if (inCurrentPeriod && medMissCounts[log.medicineId] !== undefined) {
+            medMissCounts[log.medicineId]++;
+            
+            const [h] = log.expectedTime ? log.expectedTime.split(':').map(Number) : [12];
+            if (h < 12) medMissTimes[log.medicineId].morning++;
+            else if (h < 17) medMissTimes[log.medicineId].afternoon++;
+            else medMissTimes[log.medicineId].evening++;
+          }
+          if (last7DaysMap[dateStr]) {
+            last7DaysMap[dateStr].total++;
+            last7DaysMap[dateStr].missed++;
+          }
         } else {
-          currentStreak = 0;
+           dayPerfect = false;
+           if (last7DaysMap[dateStr]) {
+             last7DaysMap[dateStr].total++;
+           }
         }
+      });
+
+      if (dayHasLogs && dayPerfect) {
+        currentStreak++;
+        if (currentStreak > bestStreak) bestStreak = currentStreak;
+      } else {
+        currentStreak = 0;
       }
     });
 
     const adherencePercent = totalDoses > 0 ? Math.round((takenDoses / totalDoses) * 100) : 0;
+    const prevAdherencePercent = prevTotalDoses > 0 ? Math.round((prevTakenDoses / prevTotalDoses) * 100) : 0;
+    let trendPercent = adherencePercent - prevAdherencePercent;
 
     let missedMostOften = 'None';
+    let missedMostOftenSub = '';
     let maxMisses = 0;
+    let missedMostId = null;
+    
     Object.keys(medMissCounts).forEach(medId => {
       if (medMissCounts[medId] > maxMisses) {
         maxMisses = medMissCounts[medId];
         missedMostOften = breakdownMap[medId].name;
+        missedMostId = medId;
       }
     });
+
+    if (missedMostId) {
+      const times = medMissTimes[missedMostId];
+      if (times.morning >= times.afternoon && times.morning >= times.evening) {
+        missedMostOftenSub = 'Usually morning dose';
+      } else if (times.afternoon >= times.morning && times.afternoon >= times.evening) {
+        missedMostOftenSub = 'Usually afternoon dose';
+      } else {
+        missedMostOftenSub = 'Usually evening dose';
+      }
+    }
 
     const breakdown = Object.values(breakdownMap).filter(b => b.total > 0).map(b => ({
       name: b.name,
       percent: Math.round((b.taken / b.total) * 100)
     }));
+    
+    const daysOfWeekList = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    const daysStatus = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(todayDate);
+      d.setDate(todayDate.getDate() - i);
+      const dStr = d.toISOString().split('T')[0];
+      const dayData = last7DaysMap[dStr];
+      
+      let status = 'none';
+      if (dayData && dayData.total > 0) {
+        if (dayData.missed > 0) {
+          status = 'missed';
+        } else if (dayData.taken === dayData.total) {
+          status = 'perfect';
+        } else {
+          status = 'partial';
+        }
+      }
+      daysStatus.push({
+        label: daysOfWeekList[d.getDay()],
+        status,
+        isToday: i === 0
+      });
+    }
 
-    setAnalytics({ adherencePercent, bestStreak, missedMostOften, breakdown });
+    setAnalytics({ adherencePercent, bestStreak, missedMostOften, missedMostOftenSub, breakdown, trendPercent, daysStatus });
   }, [viewMode]);
 
   useFocusEffect(
@@ -161,9 +258,6 @@ const TrendsScreen = () => {
       loadNotifications();
     }, [calculateAnalytics, loadNotifications])
   );
-
-  const daysOfWeek = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  const todayIndex = (new Date().getDay() + 6) % 7; // Assuming Monday is 0, Sunday is 6
 
   return (
     <SafeAreaView style={styles.container}>
@@ -213,18 +307,32 @@ const TrendsScreen = () => {
           <View style={styles.overallHeader}>
             <View>
               <Text style={styles.overallTitle}>Overall Adherence</Text>
-              <Text style={styles.overallSubTitle}>This Week</Text>
+              <Text style={styles.overallSubTitle}>This {viewMode === 'Weekly' ? 'Week' : 'Month'}</Text>
             </View>
-            <View style={styles.trendPill}>
-              <TrendUpSvg width={12} height={12} style={{ marginRight: 4 }} />
-              <Text style={styles.trendPillText}>+5%</Text>
+            <View style={[styles.trendPill, analytics.trendPercent < 0 && styles.trendPillRed]}>
+              <TrendUpSvg 
+                width={12} 
+                height={12} 
+                style={{ 
+                  marginRight: 4, 
+                  transform: [{ rotate: analytics.trendPercent < 0 ? '90deg' : '0deg' }] 
+                }} 
+              />
+              <Text style={[styles.trendPillText, analytics.trendPercent < 0 && styles.trendPillTextRed]}>
+                {analytics.trendPercent > 0 ? '+' : ''}{analytics.trendPercent}%
+              </Text>
             </View>
           </View>
 
           <View style={styles.daysRow}>
-            {daysOfWeek.map((day, idx) => (
-              <Text key={idx} style={[styles.dayText, idx === todayIndex && styles.dayTextActive]}>
-                {day}
+            {analytics.daysStatus.map((day, idx) => (
+              <Text key={idx} style={[
+                styles.dayText, 
+                day.status === 'perfect' && styles.dayTextPerfect,
+                day.status === 'missed' && styles.dayTextMissed,
+                day.isToday && styles.dayTextToday
+              ]}>
+                {day.label}
               </Text>
             ))}
           </View>
@@ -260,7 +368,9 @@ const TrendsScreen = () => {
             </View>
             <View style={styles.statContent}>
               <Text style={[styles.statValue, { fontSize: 16 }]} numberOfLines={1}>{analytics.missedMostOften}</Text>
-              <Text style={styles.statSubRed}>Usually morning dose</Text>
+              {analytics.missedMostOften !== 'None' && (
+                <Text style={styles.statSubRed}>{analytics.missedMostOftenSub}</Text>
+              )}
             </View>
           </View>
         </View>
@@ -326,12 +436,17 @@ const styles = StyleSheet.create({
   overallHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 25 },
   overallTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 4 },
   overallSubTitle: { fontSize: 13, color: '#6B7280' },
+  
   trendPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#A7F3D0', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20 },
+  trendPillRed: { backgroundColor: '#FEE2E2' },
   trendPillText: { fontSize: 12, fontWeight: '700', color: '#006F66' },
+  trendPillTextRed: { color: '#BA1A1A' },
   
   daysRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, marginBottom: 15 },
   dayText: { fontSize: 12, fontWeight: '600', color: '#9CA3AF' },
-  dayTextActive: { color: '#006F66' },
+  dayTextPerfect: { color: '#006F66' },
+  dayTextMissed: { color: '#BA1A1A' },
+  dayTextToday: { textDecorationLine: 'underline' },
   
   divider: { height: 1, backgroundColor: '#E5E7EB', marginBottom: 15 },
   adherenceFooter: { flexDirection: 'row', alignItems: 'baseline' },
