@@ -86,29 +86,49 @@ const TrendsScreen = () => {
     const todayStr = now.toISOString().split('T')[0];
     const todayDate = new Date(todayStr);
 
-    const cutoffDate = new Date(todayDate);
-    let prevPeriodStart = new Date(todayDate);
-    let prevPeriodEnd = new Date(todayDate);
-
-    if (viewMode === 'Weekly') {
-      cutoffDate.setDate(todayDate.getDate() - 6); // Last 7 days including today
-      prevPeriodStart.setDate(todayDate.getDate() - 13);
-      prevPeriodEnd.setDate(todayDate.getDate() - 7);
-    } else {
-      cutoffDate.setDate(todayDate.getDate() - 29); // Last 30 days including today
-      prevPeriodStart.setDate(todayDate.getDate() - 59);
-      prevPeriodEnd.setDate(todayDate.getDate() - 30);
-    }
-
-    let totalDoses = 0;
-    let takenDoses = 0;
-    let prevTotalDoses = 0;
-    let prevTakenDoses = 0;
-    
+    // 1. Streak Calculation (All Time)
     let currentStreak = 0;
     let bestStreak = 0;
-    
     const sortedDates = Object.keys(logsObj).sort();
+    if (sortedDates.length > 0) {
+      const firstDate = new Date(sortedDates[0]);
+      const daysDiff = Math.ceil((todayDate - firstDate) / (1000 * 60 * 60 * 24));
+      const evaluateDays = Math.min(daysDiff + 1, 365); // Cap at 1 year for performance
+      
+      for (let i = evaluateDays - 1; i >= 0; i--) {
+        const d = new Date(todayDate);
+        d.setDate(todayDate.getDate() - i);
+        const dStr = d.toISOString().split('T')[0];
+        
+        const schedules = StorageService.getDailySchedules(dStr);
+        let sTotal = 0;
+        let sMissed = 0;
+        let sTaken = 0;
+        schedules.forEach(s => {
+          if (s.expectedTime && (s.status === 'Taken' || s.status === 'Missed')) {
+            sTotal++;
+            if (s.status === 'Missed') sMissed++;
+            else if (s.status === 'Taken') sTaken++;
+          }
+        });
+        
+        if (sTotal > 0) {
+          if (sMissed === 0 && sTaken === sTotal) {
+            currentStreak++;
+            if (currentStreak > bestStreak) bestStreak = currentStreak;
+          } else {
+            currentStreak = 0;
+          }
+        }
+      }
+    }
+
+    // 2. Current & Previous Period Adherence
+    const periodLength = viewMode === 'Weekly' ? 7 : 30;
+    let currentTotalDoses = 0;
+    let currentTakenDoses = 0;
+    let prevTotalDoses = 0;
+    let prevTakenDoses = 0;
 
     const medMissCounts = {};
     const medMissTimes = {};
@@ -120,78 +140,75 @@ const TrendsScreen = () => {
       medMissTimes[m.id] = { morning: 0, afternoon: 0, evening: 0 };
     });
 
-    // Determine daily status for the last 7 days
-    const last7DaysMap = {};
-    for (let i = 6; i >= 0; i--) {
+    const daysOfWeekList = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    const daysStatus = [];
+    const daysToEvaluate = Math.max(periodLength * 2, 7);
+
+    for (let i = daysToEvaluate - 1; i >= 0; i--) {
       const d = new Date(todayDate);
       d.setDate(todayDate.getDate() - i);
       const dStr = d.toISOString().split('T')[0];
-      last7DaysMap[dStr] = { total: 0, taken: 0, missed: 0 };
-    }
-
-    sortedDates.forEach(dateStr => {
-      const logDate = new Date(dateStr);
       
-      const inCurrentPeriod = logDate >= cutoffDate && logDate <= todayDate;
-      const inPrevPeriod = logDate >= prevPeriodStart && logDate <= prevPeriodEnd;
+      const isCurrentPeriod = i < periodLength;
+      const isPrevPeriod = i >= periodLength && i < periodLength * 2;
+      const isLast7Days = i < 7;
+      
+      const schedules = StorageService.getDailySchedules(dStr);
+      
+      let visualDayTotal = 0;
+      let visualDayMissed = 0;
+      let visualDayTaken = 0;
 
-      let dayPerfect = true;
-      let dayHasLogs = false;
+      schedules.forEach(s => {
+        if (s.expectedTime) {
+          // For visual row
+          visualDayTotal++;
+          if (s.status === 'Missed') visualDayMissed++;
+          else if (s.status === 'Taken') visualDayTaken++;
 
-      logsObj[dateStr].forEach(log => {
-        dayHasLogs = true;
-        
-        if (inCurrentPeriod) {
-          totalDoses++;
-          if (breakdownMap[log.medicineId]) {
-            breakdownMap[log.medicineId].total++;
+          // For analytics (only past/resolved doses)
+          if (s.status === 'Taken' || s.status === 'Missed') {
+            if (isCurrentPeriod) {
+              currentTotalDoses++;
+              breakdownMap[s.id].total++;
+              if (s.status === 'Taken') {
+                currentTakenDoses++;
+                breakdownMap[s.id].taken++;
+              } else if (s.status === 'Missed') {
+                medMissCounts[s.id]++;
+                const [h] = s.expectedTime.split(':').map(Number);
+                if (h < 12) medMissTimes[s.id].morning++;
+                else if (h < 17) medMissTimes[s.id].afternoon++;
+                else medMissTimes[s.id].evening++;
+              }
+            } else if (isPrevPeriod) {
+              prevTotalDoses++;
+              if (s.status === 'Taken') prevTakenDoses++;
+            }
           }
-        } else if (inPrevPeriod) {
-          prevTotalDoses++;
-        }
-
-        if (log.status === 'Taken') {
-          if (inCurrentPeriod) {
-            takenDoses++;
-            if (breakdownMap[log.medicineId]) breakdownMap[log.medicineId].taken++;
-          } else if (inPrevPeriod) {
-            prevTakenDoses++;
-          }
-          if (last7DaysMap[dateStr]) {
-            last7DaysMap[dateStr].total++;
-            last7DaysMap[dateStr].taken++;
-          }
-        } else if (log.status === 'Missed') {
-          dayPerfect = false;
-          if (inCurrentPeriod && medMissCounts[log.medicineId] !== undefined) {
-            medMissCounts[log.medicineId]++;
-            
-            const [h] = log.expectedTime ? log.expectedTime.split(':').map(Number) : [12];
-            if (h < 12) medMissTimes[log.medicineId].morning++;
-            else if (h < 17) medMissTimes[log.medicineId].afternoon++;
-            else medMissTimes[log.medicineId].evening++;
-          }
-          if (last7DaysMap[dateStr]) {
-            last7DaysMap[dateStr].total++;
-            last7DaysMap[dateStr].missed++;
-          }
-        } else {
-           dayPerfect = false;
-           if (last7DaysMap[dateStr]) {
-             last7DaysMap[dateStr].total++;
-           }
         }
       });
 
-      if (dayHasLogs && dayPerfect) {
-        currentStreak++;
-        if (currentStreak > bestStreak) bestStreak = currentStreak;
-      } else {
-        currentStreak = 0;
+      if (isLast7Days) {
+        let visualStatus = 'none';
+        if (visualDayTotal > 0) {
+          if (visualDayMissed > 0) {
+            visualStatus = 'missed';
+          } else if (visualDayTaken === visualDayTotal) {
+            visualStatus = 'perfect';
+          } else {
+            visualStatus = 'partial';
+          }
+        }
+        daysStatus.push({
+          label: daysOfWeekList[d.getDay()],
+          status: visualStatus,
+          isToday: i === 0
+        });
       }
-    });
+    }
 
-    const adherencePercent = totalDoses > 0 ? Math.round((takenDoses / totalDoses) * 100) : 0;
+    const adherencePercent = currentTotalDoses > 0 ? Math.round((currentTakenDoses / currentTotalDoses) * 100) : 0;
     const prevAdherencePercent = prevTotalDoses > 0 ? Math.round((prevTakenDoses / prevTotalDoses) * 100) : 0;
     let trendPercent = adherencePercent - prevAdherencePercent;
 
@@ -223,43 +240,6 @@ const TrendsScreen = () => {
       name: b.name,
       percent: Math.round((b.taken / b.total) * 100)
     }));
-    
-    const daysOfWeekList = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-    const daysStatus = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(todayDate);
-      d.setDate(todayDate.getDate() - i);
-      const dStr = d.toISOString().split('T')[0];
-      
-      const schedules = StorageService.getDailySchedules(dStr);
-      let dayTotal = 0;
-      let dayMissed = 0;
-      let dayTaken = 0;
-
-      schedules.forEach(s => {
-        if (s.expectedTime) {
-          dayTotal++;
-          if (s.status === 'Missed') dayMissed++;
-          else if (s.status === 'Taken') dayTaken++;
-        }
-      });
-      
-      let status = 'none';
-      if (dayTotal > 0) {
-        if (dayMissed > 0) {
-          status = 'missed';
-        } else if (dayTaken === dayTotal) {
-          status = 'perfect';
-        } else {
-          status = 'partial';
-        }
-      }
-      daysStatus.push({
-        label: daysOfWeekList[d.getDay()],
-        status,
-        isToday: i === 0
-      });
-    }
 
     setAnalytics({ adherencePercent, bestStreak, missedMostOften, missedMostOftenSub, breakdown, trendPercent, daysStatus });
   }, [viewMode]);
