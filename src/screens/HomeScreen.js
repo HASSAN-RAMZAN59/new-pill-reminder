@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   badgeTaken: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E6F0EF', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20 },
   badgeTakenText: { color: '#006F66', fontSize: 12, fontWeight: '600' },
   dateSelector: { flexDirection: 'row', marginBottom: 30 },
-  dateBox: { width: 60, height: 70, backgroundColor: '#FFFFFF', borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginRight: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
+  dateBox: { width: 60, height: 70, backgroundColor: '#FFFFFF', borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginRight: 12, borderWidth: 1, borderColor: '#E5E7EB' },
   dateBoxActive: { backgroundColor: '#0285FF' },
   dateDay: { fontSize: 13, color: '#6B7280', marginBottom: 4 },
   dateNum: { fontSize: 18, fontWeight: 'bold', color: '#111827' },

@@ -418,13 +418,13 @@ const styles = StyleSheet.create({
   toggleWrapper: { paddingHorizontal: 20, marginBottom: 20 },
   toggleContainer: { flexDirection: 'row', backgroundColor: '#F3F4F6', borderRadius: 12, padding: 4 },
   toggleBtn: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8 },
-  toggleBtnActive: { backgroundColor: '#E3EBF9', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 },
+  toggleBtnActive: { backgroundColor: '#E3EBF9', borderWidth: 1, borderColor: '#0285FF' },
   toggleText: { fontSize: 14, fontWeight: '600', color: '#4B5563' },
   toggleTextActive: { color: '#0285FF' },
 
   scrollContent: { paddingBottom: 40 },
 
-  overallAdherenceCard: { marginHorizontal: 20, backgroundColor: '#F4F7FF', borderRadius: 16, padding: 20, marginBottom: 20, shadowColor: '#0285FF', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.12, shadowRadius: 20, elevation: 6 },
+  overallAdherenceCard: { marginHorizontal: 20, backgroundColor: '#F4F7FF', borderRadius: 16, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: '#0285FF' },
   overallHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 25 },
   overallTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 4 },
   overallSubTitle: { fontSize: 13, color: '#6B7280' },
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
   adherenceOnTime: { fontSize: 14, color: '#4B5563' },
 
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginBottom: 25 },
-  statCard: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginHorizontal: 4, borderWidth: 1, borderColor: '#E5E7EB', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 5, elevation: 1 },
+  statCard: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginHorizontal: 4, borderWidth: 1, borderColor: '#E5E7EB' },
   statHeaderRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   statIconWrapperGreen: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#CCFBF1', justifyContent: 'center', alignItems: 'center', marginRight: 8 },
   statIconWrapperRed: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#FEE2E2', justifyContent: 'center', alignItems: 'center', marginRight: 8 },
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 18, fontWeight: '700', color: '#111827', marginHorizontal: 20, marginBottom: 15 },
   
   breakdownContainer: { marginHorizontal: 20 },
-  breakdownCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#E5E7EB', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1 },
+  breakdownCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#E5E7EB' },
   breakdownLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   breakdownIconWrapper: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#E0F2FE', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
   breakdownTextWrap: { flex: 1, paddingRight: 10 },
