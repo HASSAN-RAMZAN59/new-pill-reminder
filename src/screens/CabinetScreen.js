@@ -249,8 +249,8 @@ const CabinetScreen = ({ navigation }) => {
         title="Delete Medicine"
         message={`Are you sure you want to delete ${selectedMedicine?.name}? This action cannot be undone.`}
         options={[
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Delete', style: 'destructive', onPress: confirmDelete }
+          { text: 'Delete', style: 'destructive', onPress: confirmDelete },
+          { text: 'Cancel', style: 'cancel' }
         ]}
       />
 
