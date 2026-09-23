@@ -112,6 +112,26 @@ const CabinetScreen = ({ navigation }) => {
     loadMedicines();
   };
 
+  const getFrequencyLabel = (item) => {
+    if (item.frequency === 'As Needed') return 'As Needed';
+    if (!item.reminders || item.reminders.length === 0) return item.frequency;
+    
+    const typeLabel = item.type || 'Dose';
+
+    if (item.reminders.length === 1) {
+      const d = new Date(item.reminders[0]);
+      const h = d.getHours();
+      let timeOfDay = 'Nightly';
+      if (h >= 5 && h < 12) timeOfDay = 'Morning';
+      else if (h >= 12 && h < 17) timeOfDay = 'Noon';
+      else if (h >= 17 && h < 20) timeOfDay = 'Evening';
+
+      return `1 ${typeLabel} ${timeOfDay}`;
+    } else {
+      return `${item.reminders.length} ${typeLabel}s Daily`;
+    }
+  };
+
   const renderMedicineCard = ({ item }) => {
     // Basic logic for stock indicators
     const isLowStock = settings.refillReminders && item.totalQuantity <= 5;
@@ -137,7 +157,7 @@ const CabinetScreen = ({ navigation }) => {
                 <MaterialIcon name="more-vert" size={20} color="#4B5563" />
               </TouchableOpacity>
             </View>
-            <Text style={styles.medSub}>{item.strength}{item.unit} • {item.frequency}</Text>
+            <Text style={styles.medSub}>{item.strength}{item.unit} • {getFrequencyLabel(item)}</Text>
             
             {item.frequency !== 'As Needed' ? (
               <View style={styles.progressRow}>
