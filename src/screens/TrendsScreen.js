@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
 
   scrollContent: { paddingBottom: 40 },
 
-  overallAdherenceCard: { marginHorizontal: 20, backgroundColor: '#F4F7FF', borderRadius: 16, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: '#E5E7EB', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 5, elevation: 1 },
+  overallAdherenceCard: { marginHorizontal: 20, backgroundColor: '#F4F7FF', borderRadius: 16, padding: 20, marginBottom: 20, shadowColor: '#0285FF', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.12, shadowRadius: 20, elevation: 6 },
   overallHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 25 },
   overallTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 4 },
   overallSubTitle: { fontSize: 13, color: '#6B7280' },
