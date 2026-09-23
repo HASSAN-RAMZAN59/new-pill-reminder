@@ -153,12 +153,6 @@ const CabinetScreen = ({ navigation }) => {
                 <Text style={styles.badgeGreyText}>Stock ({item.totalQuantity})</Text>
               </View>
             )}
-
-            {isLowStock && (
-              <TouchableOpacity style={styles.textBtn}>
-                <Text style={styles.textBtnText}>Request Refill</Text>
-              </TouchableOpacity>
-            )}
           </View>
         </View>
       </View>
