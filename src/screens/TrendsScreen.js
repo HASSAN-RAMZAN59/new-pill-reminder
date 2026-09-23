@@ -230,13 +230,25 @@ const TrendsScreen = () => {
       const d = new Date(todayDate);
       d.setDate(todayDate.getDate() - i);
       const dStr = d.toISOString().split('T')[0];
-      const dayData = last7DaysMap[dStr];
+      
+      const schedules = StorageService.getDailySchedules(dStr);
+      let dayTotal = 0;
+      let dayMissed = 0;
+      let dayTaken = 0;
+
+      schedules.forEach(s => {
+        if (s.expectedTime) {
+          dayTotal++;
+          if (s.status === 'Missed') dayMissed++;
+          else if (s.status === 'Taken') dayTaken++;
+        }
+      });
       
       let status = 'none';
-      if (dayData && dayData.total > 0) {
-        if (dayData.missed > 0) {
+      if (dayTotal > 0) {
+        if (dayMissed > 0) {
           status = 'missed';
-        } else if (dayData.taken === dayData.total) {
+        } else if (dayTaken === dayTotal) {
           status = 'perfect';
         } else {
           status = 'partial';
