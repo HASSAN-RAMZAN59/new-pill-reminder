@@ -87,11 +87,20 @@ export const StorageService = {
     let schedules = [];
 
     medicines.forEach(med => {
+      const createDate = new Date(med.createdAt);
+      
+      // Compare dates without time to ensure medicine doesn't show up before its creation day
+      const targetTime = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate()).getTime();
+      const createTime = new Date(createDate.getFullYear(), createDate.getMonth(), createDate.getDate()).getTime();
+      
+      if (targetTime < createTime) {
+        return;
+      }
+
       let appliesToday = false;
       if (med.frequency === 'Daily' || med.frequency === 'As Needed') {
         appliesToday = true;
       } else if (med.frequency === 'Weekly') {
-        const createDate = new Date(med.createdAt);
         if (createDate.getDay() === targetDay) {
           appliesToday = true;
         }
