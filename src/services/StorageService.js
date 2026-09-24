@@ -1,6 +1,6 @@
 import { createMMKV } from 'react-native-mmkv';
 
-export const storage = createMMKV();
+const storage = createMMKV();
 
 const MEDICINES_KEY = 'medicines';
 const LOGS_KEY = 'logs';
