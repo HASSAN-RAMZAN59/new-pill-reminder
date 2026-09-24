@@ -70,7 +70,7 @@ const TrendsScreen = () => {
     const meds = StorageService.getMedicines();
     meds.forEach(med => {
       if (med.totalQuantity <= 5) {
-        alerts.push({ title: 'Low Inventory', message: `${med.name} is running low (${med.totalQuantity} remaining).` });
+        alerts.push({ title: 'Low Inventory', message: `${med.name} is running low (Only ${med.totalQuantity} quantity left).` });
       }
     });
     setNotifications(alerts);

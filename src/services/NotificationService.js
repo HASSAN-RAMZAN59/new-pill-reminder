@@ -56,9 +56,19 @@ class NotificationService {
       let triggerDate = new Date();
       triggerDate.setHours(reminderDate.getHours(), reminderDate.getMinutes(), 0, 0);
 
-      // If time has passed today, schedule for tomorrow
-      if (triggerDate.getTime() <= now.getTime()) {
-        triggerDate.setDate(triggerDate.getDate() + 1);
+      if (medicine.frequency === 'Weekly') {
+        const createDate = new Date(medicine.createdAt);
+        const targetDayOfWeek = createDate.getDay();
+        
+        // Find the next day that matches the creation day of week
+        while (triggerDate.getDay() !== targetDayOfWeek || triggerDate.getTime() <= now.getTime()) {
+          triggerDate.setDate(triggerDate.getDate() + 1);
+        }
+      } else {
+        // For Daily (As Needed is handled early)
+        if (triggerDate.getTime() <= now.getTime()) {
+          triggerDate.setDate(triggerDate.getDate() + 1);
+        }
       }
 
       const trigger = {
@@ -129,7 +139,7 @@ class NotificationService {
 
       await notifee.displayNotification({
         title: '⚠️ Refill Reminder',
-        body: `You are running low on ${medicine.name}. Only ${newQuantity} left!`,
+        body: `You are running low on ${medicine.name}. Only ${newQuantity} doses remaining!`,
         android: {
           channelId: channelId,
           importance: AndroidImportance.HIGH,
